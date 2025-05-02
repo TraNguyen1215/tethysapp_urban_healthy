@@ -1,0 +1,8 @@
+# Thư viện cần tải
+numpy
+pandas
+matplotlib
+geopandas
+django==3.2
+flask
+requests
