@@ -10,3 +10,5 @@
 .idea/
 services.yml
 .env
+__pycache__/
+**/public/data/

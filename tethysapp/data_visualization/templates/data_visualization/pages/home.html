@@ -1,29 +1,1127 @@
-{% extends "data_visualization/base.html" %}
-{% load static %}
-
+{% extends "data_visualization/base.html" %} 
+{% load static %} 
 {% block content %}
+<div id="map"></div>
+<button class="layer-button-box" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLayer" aria-controls="offcanvasLayer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
+        <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+        <path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+    </svg>
+</button>
 
-<meta name="csrf-token" content="{{ csrf_token }}">
-<div id="map" style="height: 100vh;"></div>
+<!-- Box hiển thị thông tin điểm quan trắc -->
+<div class="data-info-table d-none">
+    <div class="data-info-table__nav">
+        <p id="data-info-table__title">Thông tin Trạm quan trắc</p>
+        <button id="data-info-table__close-btn" type="button" class="btn close-offcanvas-layer-btn">
+            <span>Đóng</span>
+        </button>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td>Key</td>
+                <td>Value</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Dữ liệu mực nước -->
+    <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-level-collapse" aria-expanded="false" aria-controls="water-level-collapse">
+        <div class="data-info-table__nav">
+            <p id="data-info-table__title">Dữ liệu Mực nước</p>
+        </div>
+        <span class="icon" id="water-level-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            </svg>
+        </span>
+    </div>
+    <div class="collapse multi-collapse" id="water-level-collapse">
+        <div class="chart-controll">
+            <div>
+                <label>Từ ngày</label>
+                <input class="start-date" type="date" name="" id="">
+            </div>
+            <div>
+                <label>Đến ngày</label>
+                <input class="end-date" type="date" name="" id="">
+            </div>
+            <button class="btn view-data-button" id="view-water-level-button">Xem</button>
+        </div>
+
+        <div class="loading-box d-none">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <button class="btn cancel-button">Hủy</button>
+        </div>
+
+        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
+        
+        <canvas id="water-level-chart" class="d-none"></canvas>
+    </div>
+    
+    <!-- Dữ liệu nhiệt độ -->
+    <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-temp-collapse" aria-expanded="false" aria-controls="water-temp-collapse">
+        <div class="data-info-table__nav">
+            <p id="data-info-table__title">Dữ liệu Nhiệt độ</p>
+        </div>
+        <span class="icon" id="water-temp-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            </svg>
+        </span>
+    </div>
+    
+    <div class="collapse multi-collapse" id="water-temp-collapse">
+        <div class="chart-controll">
+            <div>
+                <label>Từ ngày</label>
+                <input class="start-date" type="date" name="" id="">
+            </div>
+            <div>
+                <label>Đến ngày</label>
+                <input class="end-date" type="date" name="" id="">
+            </div>
+            <button class="btn view-data-button" id="view-water-temp-button">Xem</button>
+        </div>
+        
+        <div class="loading-box d-none">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <button class="btn cancel-button">Hủy</button>
+        </div>
+        
+        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
+        
+        <canvas id="water-temp-chart" class="d-none"></canvas>
+    </div>
+
+    <!-- Dữ liệu hóa học -->
+    <!-- <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-chemistry-collapse" aria-expanded="false"
+        aria-controls="water-chemistry-collapse">
+        <div class="data-info-table__nav">
+            <p id="data-info-table__title">Dữ liệu Hóa học</p>
+        </div>
+        <span class="icon" id="water-chemistry-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+            </svg>
+        </span>
+    </div>
+    
+    <div class="collapse multi-collapse" id="water-chemistry-collapse">
+        <div class="chart-controll">
+            <div>
+                <label>Từ ngày</label>
+                <input class="start-date" type="date" name="" id="">
+            </div>
+            <div>
+                <label>Đến ngày</label>
+                <input class="end-date" type="date" name="" id="">
+            </div>
+            <button class="btn view-data-button" id="view-water-chemistry-button">Xem</button>
+        </div>
+        <div class="chart-controll">
+            <div>
+                <label>Thông số</label>
+                <select id="parameter-chemistry" class="parameter">
+                    <option value="1">---Chọn thông số---</option>
+                </select>
+            </div>
+        </div>
+    
+        <div class="loading-box d-none">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <button class="btn cancel-button">Hủy</button>
+        </div>
+    
+        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
+    
+        <canvas id="water-chemistry-chart" class="d-none"></canvas>
+    </div> -->
+</div>
+
+<!-- Offcanvas chọn layer -->
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasLayer" aria-labelledby="offcanvasLayerLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasLayerLabel">Lớp bản đồ</h5>
+        <button type="button" class="btn close-offcanvas-layer-btn" data-bs-dismiss="offcanvas" aria-label="Đóng">
+            <span>Thu nhỏ</span>
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Hiển thị các thành phần bản đồ -->
+        <!-- Lớp bản đồ quy hoạch TNN -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#thematic-layer-collapse" aria-expanded="false" aria-controls="thematic-layer-collapse">
+            <div class="d-flex" style="align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
+                    <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+                    <path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+                </svg>
+                <h6 style="margin-left: 8px;">Bản đồ quy hoạch TNN</h6>
+            </div>
+            <span class="icon" id="thematic-layer-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="thematic-layer-collapse">
+            <div class="thematic-layers layer-items">
+                <div class="layer-item">
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-pv" />
+                        <label class="form-check-label" for="switch-pv">Phân vùng quy hoạch</label>
+                    </div>
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-diem-pvcnnn" />
+                        <label class="form-check-label" for="switch-diem-pvcnnn">Điểm phân vùng CNN</label>
+                    </div>
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-sut-lun" />
+                        <label class="form-check-label" for="switch-sut-lun">Sụt lún</label>
+                    </div>
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-sat-lo-duong" />
+                        <label class="form-check-label" for="switch-sat-lo-duong">Sạt lở - Đường</label>
+                    </div>
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-sat-lo-diem" />
+                        <label class="form-check-label" for="switch-sat-lo-diem">Sạt lở - Điểm</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <!-- Lớp mạng lưới trạm quan trắc -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#network-layer-collapse" aria-expanded="false" aria-controls="network-layer-collapse">
+            <div class="d-flex" style="align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
+                    <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+                    <path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+                </svg>
+                <h6 style="margin-left: 8px;">Mạng lưới trạm quan trắc</h6>
+            </div>
+            <span class="icon" id="network-layer-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="network-layer-collapse">
+            <div class="network-layers layer-items">
+                <div class="layer-item">
+                    <div class="form-check form-switch" style="margin-bottom: 10px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-01" />
+                        <label class="form-check-label" for="switch-01">Trạm quan trắc</label>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <hr>
+        <!-- Chuyên đề dự báo cảnh báo -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#forecast-layer-collapse" aria-expanded="false"
+            aria-controls="forecast-layer-collapse">
+            <div class="d-flex" style="align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
+                    <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+                    <path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+                </svg>
+                <h6 style="margin-left: 8px;">Chuyên đề dự báo cảnh báo</h6>
+            </div>
+            <span class="icon" id="forecast-layer-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="forecast-layer-collapse">
+            <div class="forecast-layers layer-items" style="padding-right:0px ;">
+                <!-- Dự báo mực nước tháng 8 -->
+                <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-8-collapse" aria-expanded="false"
+                    aria-controls="water-8-collapse" style="margin: 0px 0px 8px">
+                    <h6>Dự báo mực nước tháng 8/2024</h6>
+                    <span class="icon" id="water-8-toggle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="collapse multi-collapse" id="water-8-collapse">
+                    <div class="water-8-layers layer-items">
+                    </div>
+                </div>
+
+                <!-- Dự báo mực nước tháng 9 -->
+                <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-9-collapse" aria-expanded="false"
+                    aria-controls="water-9-collapse">
+                    <h6>Dự báo mực nước tháng 9/2024</h6>
+                    <span class="icon" id="water-9-toggle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="collapse multi-collapse" id="water-9-collapse">
+                    <div class="water-9-layers layer-items">
+                    </div>
+                </div>
+
+                <!-- Dự báo mực nước tháng 10 -->
+                <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-10-collapse" aria-expanded="false"
+                    aria-controls="water-10-collapse">
+                    <h6>Dự báo mực nước tháng 10/2024</h6>
+                    <span class="icon" id="water-10-toggle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="collapse multi-collapse" id="water-10-collapse">
+                    <div class="water-10-layers layer-items">
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp3-month"/>
+                            <label class="form-check-label" for="switch-qp3-month">Tầng qp3 - Sơ đồ diễn biến mực nước tháng 9</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp3-year"/>
+                            <label class="form-check-label" for="switch-qp3-year">Tầng qp3 - Sơ đồ diễn biến mực nước tháng 9 so với cùng kỳ năm trước</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp3-5-year"/>
+                            <label class="form-check-label" for="switch-qp3-5-year">Tầng qp3 - Sơ đồ diễn biến mực nước tháng 9 so với cùng kỳ 5 năm trước</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp3-db"/>
+                            <label class="form-check-label" for="switch-qp3-db">Tầng qp3 - Dự báo mực nước tháng 10</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp23-db" />
+                            <label class="form-check-label" for="switch-qp23-db">Tầng qp23 - Dự báo mực nước tháng 10</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-qp1-db" />
+                            <label class="form-check-label" for="switch-qp1-db">Tầng qp1 - Dự báo mực nước tháng 10</label>
+                        </div>
+                        <div class="layer-item form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-n22-db" />
+                            <label class="form-check-label" for="switch-n22-db">Tầng n22 - Dự báo mực nước tháng 10</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <!-- Lớp bản đồ nền -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#bg-layer-collapse" aria-expanded="false" aria-controls="bg-layer-collapse">
+            <h6>Bản đồ nền</h6>
+            <span class="icon" id="bg-layer-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="bg-layer-collapse">
+            <div class="background-layers layer-items" > 
+                <div class="layer-item active" bg-layer-name="becagis">
+                    <div class="layer-image"></div>
+                    <p class="layer-name">Mặc định</p>
+                </div>
+        
+                <div class="layer-item" bg-layer-name="streets">
+                    <div class="layer-image"></div>
+                    <p class="layer-name">Đường phố</p>
+                </div>
+        
+                <div class="layer-item" bg-layer-name="satellite">
+                    <div class="layer-image"></div>
+                    <p class="layer-name">Vệ tinh</p>
+                </div>
+        
+                <div class="layer-item" bg-layer-name="topo">
+                    <div class="layer-image"></div>
+                    <p class="layer-name">Địa hình</p>
+                </div>
+        
+                <div class="layer-item" bg-layer-name="openstreetmap">
+                    <div class="layer-image"></div>
+                    <p class="layer-name">Open Street Map</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-footer" style="text-align: center;">
+        <!-- <img src="{% static 'data_visualization/images/logo.png' %}" width="32" height="32" /> -->
+        <p style="font-size: 12px; margin-top: 4px;">© Copyright 2024 MKDC ICT</p>
+    </div>
+</div>
+
+<div class="legend-box">
+    <div class="legend-scrollable">
+        <!-- Phân vùng quy hoạch -->
+        <div class="layer-legend d-none" id="legend-pv">
+            <h6>Phân vùng quy hoạch</h6>
+            <p><i>Mức độ phân vùng</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: gray;"></div>
+                <span class="legend-text">Phân vùng quy hoạch</span>
+            </div>
+        </div>
+        <!-- Điểm phân vùng CNNN -->
+        <div class="layer-legend d-none" id="legend-diem-pvcnnn">
+            <h6>Điểm phân vùng CNNN</h6>
+            <p><i>Mức độ phân vùng</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #004da8; transform: rotate(45deg);"></div>
+                <span class="legend-text">Điểm phân vùng CNNN</span>
+            </div>
+        </div>
+        <!-- Sụt lún -->
+        <div class="layer-legend d-none" id="legend-00">
+            <h6>Sụt lún</h6>
+            <p><i>Mức độ sụt lún</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #c7df00;"></div>
+                <span class="legend-text" style="margin-left:16px">Không lún (diện tích 2,32 nghìn km2)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #55ff00;"></div>
+                <span class="legend-text" style="margin-left:16px">Từ 0-5 cm (diện tích 11,5 nghìn km2)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #4ce600;"></div>
+                <span class="legend-text" style="margin-left:16px">Từ 5-10cm (diện tích 7,96 nghìn km2)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #e69800;"></div>
+                <span class="legend-text" style="margin-left:16px">Trên 10 cm (diện tích 3.36 nghìn km2)</span>
+            </div>
+        </div>
+        <!-- Sạt lở - đường-->
+        <div class="layer-legend d-none" id="legend-01">
+            <h6>Sạt lở - Đường</h6>
+            <p><i>Mức độ sạt lở - đường</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #38a800;"></div>
+                <span class="legend-text" style="margin-left:16px">Sạt lở bình thường</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #f9f400;"></div>
+                <span class="legend-text" style="margin-left:16px">Sạt lở nguy hiểm</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #0070ff;"></div>
+                <span class="legend-text" style="margin-left:16px">Sạt lở đặc biệt nguy hiểm có kế hoạch</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #e10052;"></div>
+                <span class="legend-text" style="margin-left:16px">Sạt lở đặc biệt nguy hiểm đang rà soát</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #6677cd;"></div>
+                <span class="legend-text" style="margin-left:16px">Sạt lở đặc biệt nguy hiểm đang trình</span>
+            </div>
+        </div>
+        <!-- Sạt lở - điểm-->
+        <div class="layer-legend d-none" id="legend-02">
+            <h6>Sạt lở - Điểm</h6>
+            <p><i>Mức độ sạt lở - điểm</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #4ce600;"></div>
+                <span class="legend-text">Sạt lở bình thường</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #ffff00;"></div>
+                <span class="legend-text">Sạt lở nguy hiểm</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #d47508;"></div>
+                <span class="legend-text">Sạt lở ĐBNH có kế hoạch</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #e64c00;"></div>
+                <span class="legend-text">Sạt lở ĐBNH đang rà soát</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #6677cd;"></div>
+                <span class="legend-text">Sạt lở ĐBNH đang trình</span>
+            </div>
+        </div>
+        <!-- Trạm quan trắc -->
+        <div class="layer-legend d-none" id="legend-03">
+            <h6>Trạm quan trắc</h6>
+            <p><i>Hiện trạng</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #ff0000;"></div>
+                <span class="legend-text">Dừng quan trắc</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #ffdd00;"></div>
+                <span class="legend-text">Không ổn định</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #00ff40;"></div>
+                <span class="legend-text">Đang hoạt động</span>
+            </div>
+        </div>
+        <!-- Dự báo mực nước -->
+        <div class="layer-legend d-none" id="legend-04">
+            <h6>Dự báo mực nước</h6>
+            <!-- Độ sâu mực nước -->
+            <p><i>Độ sâu mực nước</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #2892c7;"></div>
+                <span class="legend-text">Từ 0 đến -2 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #519ebd;"></div>
+                <span class="legend-text">Từ -2 đến -4 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #71abd0;"></div>
+                <span class="legend-text">Từ -4 đến -6 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #8cb8a4;"></div>
+                <span class="legend-text">Từ -6 đến -8 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #a7c797;"></div>
+                <span class="legend-text">Từ -8 đến -10 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #bfda8a;"></div>
+                <span class="legend-text">Từ -10 đến -12 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #d7e37d;"></div>
+                <span class="legend-text">Từ -12 đến -14 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #eeef6d;"></div>
+                <span class="legend-text">Từ -14 đến -16 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #fafc5c;"></div>
+                <span class="legend-text">Từ -16 đến -18 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #fceca0;"></div>
+                <span class="legend-text">Từ -18 đến -20 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #fcbb44;"></div>
+                <span class="legend-text">Từ -20 đến -22 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #f7969d;"></div>
+                <span class="legend-text">Từ -22 đến -24 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #f78a2d;"></div>
+                <span class="legend-text">Từ -24 đến -26 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #f5601a;"></div>
+                <span class="legend-text">Từ -26 đến -28 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #e81014;"></div>
+                <span class="legend-text">Từ -28 đến -30 (m)</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #e81014;"></div>
+                <span class="legend-text">Nhỏ hơn -30 (m)</span>
+            </div>
+            <!-- Đường dâng mực nước -->
+            <p class="mt-2"><i>Đường dâng mực nước</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-line" style="background-color: #010eff;"></div>
+                <span class="legend-text" style="margin-left: 16px;">Đường dâng mực nước</span>
+            </div>
+            <!-- Mức độ mực nước T9-->
+            <div class="d-none" id="water-1">
+                <p class="mt-2"><i>Mực nước T9</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up large_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item" id="item_5">
+                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item" id="item_6">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down small_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.5 đến < 1.0</span>
+                </div>
+            </div>
+            <!-- Mức độ mực nước T9 so với cùng kỳ năm ngoái -->
+            <div class="d-none" id="water-2">
+                <p class="mt-2"><i>Mực nước T9 so với cùng kỳ năm ngoái</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up" style="border-bottom-color: #00ff40; border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 2.0 đến < 4.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item small_triangle">
+                    <div class="tag-triangle-up" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item" id="item_6">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down small_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down large_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 1.0 đến < 2.0</span>
+                </div>
+            </div>
+            <!-- Mực nước 9 so với cùng kỳ 5 năm trước -->
+            <div class="d-none" id="water-3">
+                <p class="mt-2"><i>Mực nước 9 so với cùng kỳ 5 năm trước</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item ">
+                    <div class="tag-triangle-down small_triangle" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item " >
+                    <div class="tag-triangle-down large_triangle" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 1.0 đến < 2.0</span>
+                </div>
+                <div class="layer-legend__item ">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 4.0 đến < 6.0</span>
+                </div>
+            </div>
+            <!-- Mực nước T10 - tầng q3-->
+            <div class="d-none" id="water-4">
+                <p class="mt-2"><i>Mực nước T10 - Tầng q3</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 1.0 đến < 2.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up large_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item large_triangle">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 1.0 đến < 2.0</span>
+                </div>
+            </div>
+            <!-- Mực nước T10 - tầng qp23 -->
+            <div class="d-none" id="water-5">
+                <p class="mt-2"><i>Mực nước T10 - Tầng qp23</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down small_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down large_triangle" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 2.0 đến < 4.0</span>
+                </div>
+            </div>
+            <!-- Mực nước T10 - Tầng q1 -->
+            <div class="d-none" id="water-6">
+                <p class="mt-2"><i>Mực nước T10 - Tầng q1</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down small_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down large_triangle" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.5 đến < 1.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 2.0 đến < 4.0</span>
+                </div>
+            </div>
+            <!-- Mực nước T10 - Tầng n22 -->
+            <div class="d-none" id="water-7">
+                <p class="mt-2"><i>Mực nước T10 - Tâng n22</i></p>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 2.0 đến < 4.0</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
+                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
+                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-triangle-down medium_triangle" style="border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
+                </div>
+                <div class="layer-legend__item large_triangle">
+                    <div class="tag-triangle-down" style="border-top-color: #ff0000;border-bottom:0px"></div>
+                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                </div>
+            </div>
+        </div>
+            
+        <!-- <div class="layer-legend__item" id="item_13">
+            <div class="image-container">
+                <img src="https://gis.mkdc.com.vn/geoserver/data_visualization/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=data_visualization:qp3_MucNuoc_T9vsT8&legend_options=fontName:Times%20New%20Roman;fontAntiAliasing:true;fontColor:0x000033;fontSize:12"
+                    alt="Legend Graphic" class="bottom-only">
+            </div>
+        </div> -->
+    </div>
+</div>
 
 {% endblock %}
-
 
 {% block styles %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'data_visualization/vendors/maplibre-gl@4.3.1/maplibre-gl.css' %}" />
 <link href="{% static 'data_visualization/css/pages/home.css' %}" rel="stylesheet" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
 <script src="{% static 'data_visualization/vendors/chartjs@3.0.0/chart.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'data_visualization/vendors/maplibre-gl@4.3.1/maplibre-gl.js' %}"></script>
-<script src="{% static 'data_visualization/js/pages/home.js' %}" type="text/javascript"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
+<!-- Script xử lý sự kiện đóng mở collapse -->
+<script>
+    const geojsonPath = "{% static 'data_visualization/data/ms.geojson' %}";
+
+    $(document).ready(function() {
+        // Lắng nghe sự kiện khi Offcanvas mở
+        $('#offcanvasLayer').on('show.bs.offcanvas', function () {
+            $('.legend-box').removeClass('fixed-div-close');
+            $('.legend-box').addClass('fixed-div-open');
+        });
+
+        // Lắng nghe sự kiện khi Offcanvas đóng
+        $('#offcanvasLayer').on('hide.bs.offcanvas', function () {
+            $('.legend-box').removeClass('fixed-div-open');
+            $('.legend-box').addClass('fixed-div-close');
+        });
+    });
+
+    var svg_chevron_up = 
+    `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-up" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1.646 11.146a.5.5 0 0 0 .708 0L8 5.5l5.646 5.646a.5.5 0 0 0 .708-.708l-6-6a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708z"/>
+        </svg>
+    `;
+
+    var svg_chevron_down = 
+    `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    `;
+
+    $(document).ready(function () {
+        // Hàm đóng mở collapse
+        function setupCollapseToggle(collapseId, toggleIconId) {
+            // Lắng nghe sự kiện mở collapse
+            $(collapseId).on("show.bs.collapse", function () {
+                $(toggleIconId).html(svg_chevron_up);
+            });
+             // Lắng nghe sự kiện đóng collapse
+            $(collapseId).on("hide.bs.collapse", function () {
+                $(toggleIconId).html(svg_chevron_down);
+            });
+        }
+
+        // Thiết lập cho các layer khác nhau
+        setupCollapseToggle("#bg-layer-collapse", "#bg-layer-toggle-icon");
+        setupCollapseToggle("#thematic-layer-collapse", "#thematic-layer-toggle-icon");
+        setupCollapseToggle("#network-layer-collapse", "#network-layer-toggle-icon");
+        setupCollapseToggle("#water-level-collapse", "#water-level-toggle-icon");
+        setupCollapseToggle("#water-temp-collapse", "#water-temp-toggle-icon");
+        setupCollapseToggle("water_chemistry-collapse", "#water-chemistry-toggle-icon");
+
+        function setupCollapseToggle(collapseId, toggleIconId, useStopPropagation = false) {
+            // Lắng nghe sự kiện mở - đóng collapse
+            $(collapseId).on("show.bs.collapse", function (e) {
+                if (useStopPropagation) e.stopPropagation(); // Ngăn chặn ảnh hưởng đến các phần tử cha.
+                $(toggleIconId).html(svg_chevron_up);
+            }).on("hide.bs.collapse", function (e) {
+                if (useStopPropagation) e.stopPropagation(); // Ngăn chặn ảnh hưởng đến các phần tử cha.
+                $(toggleIconId).html(svg_chevron_down);
+            });
+        }
+
+        // Thiết lập cho các layer khác nhau
+        setupCollapseToggle("#forecast-layer-collapse", "#forecast-layer-toggle-icon");
+        setupCollapseToggle("#water-8-collapse", "#water-8-toggle-icon", true);
+        setupCollapseToggle("#water-9-collapse", "#water-9-toggle-icon", true);
+        setupCollapseToggle("#water-10-collapse", "#water-10-toggle-icon", true);
+
+        $("#switch-pv").on("click", function () {
+            var isChecked = $("#switch-pv").prop("checked");
+            if (isChecked) {
+                map.setLayoutProperty("zone-plan", "visibility", "visible");
+            } else {
+                map.setLayoutProperty("zone-plan", "visibility", "none");
+            }
+        });
+
+        $("#switch-diem-pvcnnn").on("click", function () {
+            var isChecked = $("#switch-diem-pvcnnn").prop("checked");
+            if (isChecked) {
+                map.setLayoutProperty("diem_pvcnnn", "visibility", "visible");
+            } else {
+                map.setLayoutProperty("diem_pvcnnn", "visibility", "none");
+            }
+        });
+
+        $("#switch-sut-lun").on("click", function () {
+            var isChecked = $("#switch-sut-lun").prop("checked");
+            if (isChecked) {
+                map.setLayoutProperty("qh-sut-lun", "visibility", "visible");
+            } else {
+                map.setLayoutProperty("qh-sut-lun", "visibility", "none");
+            }
+        });
+
+        $("#switch-sat-lo-duong").on("click", function () {
+            var isChecked = $("#switch-sat-lo-duong").prop("checked");
+            if (isChecked) {
+                map.setLayoutProperty("sat-lo-duong", "visibility", "visible");
+            } else {
+                map.setLayoutProperty("sat-lo-duong", "visibility", "none");
+            }
+        });
+
+        $("#switch-sat-lo-diem").on("click", function () {
+            var isChecked = $("#switch-sat-lo-diem").prop("checked");
+            if (isChecked) {
+                map.setLayoutProperty("sat-lo-diem", "visibility", "visible");
+            } else {
+                map.setLayoutProperty("sat-lo-diem", "visibility", "none");
+            }
+        });
+
+        // Lắng nghe sự kiện click cho switch sụt lún
+        $("#switch-sut-lun").on("click", function () {
+            var isChecked = $("#switch-sut-lun").prop("checked");
+            if (isChecked) {
+                $("#legend-00").removeClass("d-none");
+                map.moveLayer('qh-sut-lun'); // di chuyển lớp nên trước lớp khác (thay đổi thứ tự hiển thị)
+                map.setLayoutProperty("qh-sut-lun", "visibility", "visible");
+            } else {
+                $("#legend-00").addClass("d-none");
+                map.setLayoutProperty("qh-sut-lun", "visibility", "none");
+            }
+        });
+
+        // Lắng nghe sự kiện click cho switch sạt lở đường
+        $("#switch-sat-lo-duong").on("click", function () {
+            var isChecked = $("#switch-sat-lo-duong").prop("checked");
+            if (isChecked) {
+                $("#legend-01").removeClass("d-none");
+                map.moveLayer('sat-lo-duong');
+                map.setLayoutProperty("sat-lo-duong", "visibility", "visible");
+            } else {
+                $("#legend-01").addClass("d-none");
+                map.setLayoutProperty("sat-lo-duong", "visibility", "none");
+            }
+        });
+
+        // Lắng nghe sự kiện click cho switch sạt lở điểm
+        $("#switch-sat-lo-diem").on("click", function () {
+            var isChecked = $("#switch-sat-lo-diem").prop("checked");
+            if (isChecked) {
+                $("#legend-02").removeClass("d-none");
+                map.moveLayer('sat-lo-diem');
+                map.setLayoutProperty("sat-lo-diem", "visibility", "visible");
+            } else {
+                $("#legend-02").addClass("d-none");
+                map.setLayoutProperty("sat-lo-diem", "visibility", "none");
+            }
+        });
+
+        // Lắng nghe sự kiện click cho switch khu vực quy hoạch
+        $("#switch-pv").on("click", function () {
+            var isChecked = $("#switch-pv").prop("checked");
+            if (isChecked) {
+                $("#legend-pv").removeClass("d-none");
+                map.moveLayer('zone-plan');
+                map.setLayoutProperty("zone-plan", "visibility", "visible");
+            } else {
+                $("#legend-pv").addClass("d-none");
+                map.setLayoutProperty("zone-plan", "visibility", "none");
+            }
+        });
+
+        // Lắng nghe sự kiện click cho switch điểm PVCNNN
+        $("#switch-diem-pvcnnn").on("click", function () {
+            var isChecked = $("#switch-diem-pvcnnn").prop("checked");
+            if (isChecked) {
+                $("#legend-diem-pvcnnn").removeClass("d-none");
+                map.moveLayer('diem_pvcnnn');
+                map.setLayoutProperty("diem_pvcnnn", "visibility", "visible");
+            } else {
+                $("#legend-diem-pvcnnn").addClass("d-none");
+                map.setLayoutProperty("diem_pvcnnn", "visibility", "none");
+            }
+        });
+
+        // Hiển thị legend-1
+        $("#switch-01").on("click", function () {
+            var isChecked = $("#switch-01").prop("checked");
+            if (isChecked) {
+                $("#legend-03").removeClass("d-none");
+                map.moveLayer('stations');
+                map.setLayoutProperty("stations", "visibility", "visible");
+            } else {
+                $("#legend-03").addClass("d-none");
+                map.setLayoutProperty("stations", "visibility", "none");
+            }
+        });
+
+        // Hiển thị legend-2 và layer tương ứng
+        function toggleLayer(switchId, layerId) {
+        const isChecked = document.querySelector(`#${switchId}`).checked;
+        
+        map.setLayoutProperty(layerId, "visibility", isChecked ? "visible" : "none");
+
+        const anyChecked = layers.some(layer => document.querySelector(`#${layer.switchId}`).checked);
+
+        const legend = document.querySelector("#legend-04");
+
+        // Hiển thị hoặc ẩn legend dựa trên trạng thái của các lớp
+        if (anyChecked) {
+            $(legend).removeClass("d-none");
+            if (switchId === 'switch-qp3-month') {
+                if (isChecked) {
+                    $("#water-1").removeClass("d-none");
+                } else {
+                    $("#water-1").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-qp3-year') {
+                if (isChecked) {
+                    $("#water-2").removeClass("d-none");
+                } else {
+                    $("#water-2").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-qp3-5-year') {
+                if (isChecked) {
+                    $("#water-3").removeClass("d-none");
+                } else {
+                    $("#water-3").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-qp3-db') {
+                if (isChecked) {
+                    $("#water-4").removeClass("d-none");
+                } else {
+                    $("#water-4").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-qp23-db') {
+                if (isChecked) {
+                    $("#water-5").removeClass("d-none");
+                } else {
+                    $("#water-5").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-qp1-db') {
+                if (isChecked) {
+                    $("#water-6").removeClass("d-none");
+                } else {
+                    $("#water-6").addClass("d-none");
+                }
+            }
+
+            if (switchId === 'switch-n22-db') {
+                if (isChecked) {
+                    $("#water-7").removeClass("d-none");
+                } else {
+                    $("#water-7").addClass("d-none");
+                }
+            }
+
+        } else {
+            // Ẩn toàn bộ legend nếu không có lớp nào được bật
+            $(legend).addClass("d-none");
+        }
+    }
+
+        // Gán sự kiện click cho tất cả các switch
+        const layers = [
+            { switchId: "switch-qp3-month", layerId: "qp3-db-month" },
+            { switchId: "switch-qp3-year", layerId: "qp3-db-year" },
+            { switchId: "switch-qp3-5-year", layerId: "qp3-db-5-year" },
+            { switchId: "switch-qp3-db", layerId: "qp3-db" },
+            { switchId: "switch-qp23-db", layerId: "qp23-db" },
+            { switchId: "switch-qp1-db", layerId: "qp1-db" },
+            { switchId: "switch-n22-db", layerId: "n22-db" },
+
+            // { switchId: "switch-qp23", layerId: "qp23-db" },
+            // { switchId: "switch-qp1", layerId: "qp1-db" },
+            // { switchId: "switch-n22", layerId: "n22-db" },
+            // { switchId: "switch-n21", layerId: "n21-db" }
+        ];
+
+        layers.forEach(function(layer) {
+            $("#" + layer.switchId).on("click", function() {
+                toggleLayer(layer.switchId, layer.layerId);
+            });
+        });
+
+        // Hàm lấy ngày hiện tại
+        function getCurrentDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            return `${year}-${month}-${day}`;
+        }
+
+        // Hàm tính ngày cách đây 3 tháng
+        function getEndDateThreeMonthsAgo() {
+            const today = new Date();
+            today.setMonth(today.getMonth() - 6); // Lùi lại 3 tháng
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Tháng từ 0 đến 11, cần +1
+            const year = today.getFullYear();
+            return `${year}-${month}-${day}`;
+        }
+
+        // Lấy ngày hiện tại và ngày cách đây 3 tháng
+        const end_date = getCurrentDate();
+        const start_date = getEndDateThreeMonthsAgo();
+
+        // Sử dụng jQuery để đặt ngày
+        $('.start-date').val(start_date);
+        $('.end-date').val(end_date);
+    });
 </script>
+
+<script src="{% static 'data_visualization/js/pages/home.js' %}"></script>
 
 {% endblock %}

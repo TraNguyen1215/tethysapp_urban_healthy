@@ -1,133 +1,435 @@
-body {
-        font-family: Arial, sans-serif;
-        background-color: #f8f9fa;
-        padding-top: 20px;
-    }
-    h2 {
-        font-weight: bold;
-        color: #333;
-    }
-    .form-label {
-        font-weight: bold;
-        color: #555;
-    }
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-/* CSS cho kết quả hiển thị */
-.result-item {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+}
+
+.layer-button-box {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.layer-button-box p {
+    font-size: 12px;
+    padding-top: 4px;
+    margin-bottom: 0;
+}
+
+#offcanvasLayer {
+    margin-top: 48px;
+    width: 300px;
+}
+
+#offcanvasLayer h6 {
+    padding: 8px 0px;
+    margin: 0;
+    font-size: 13px;
+}
+
+#offcanvasLayer .background-layers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 8px;
+    margin-bottom: 12px;
+    padding-top: 6px;
+}
+
+.offcanvas-header {
+    justify-content: space-between !important;
+}
+
+.offcanvas-header h5 {
+    font-size: 15px;
+}
+
+.offcanvas-body hr {
+    color: #464646;
+    margin: 0px 8px;
+}
+
+.layer-item:hover {
+    cursor: pointer;
+}
+
+.layer-item label {
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.layer-item .layer-image {
+    padding-top: 60%;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+}
+
+.layer-item .layer-name {
     text-align: center;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 12px;
 }
 
-.result-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+.layer-item.active .layer-image {
+    border: 2px solid #464646;
+    padding-top: calc(60% - 4px);
 }
 
-.result-item img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 10px;
+.layer-item.active .layer-name {
+    font-weight: bold;
 }
 
-.result-item .result-text {
-    font-size: 1rem;
-    color: #28a745; /* Xanh lá báo thành công */
-    margin-bottom: 10px;
+.layer-item[bg-layer-name=becagis] .layer-image {
+    background-image: url("/static/data_visualization/images/becagis.png");
 }
 
-.result-item .btn {
-    margin: 5px;
-    font-size: 0.9rem;
-    border-radius: 0px;
+.layer-item[bg-layer-name=streets] .layer-image {
+    background-image: url("/static/data_visualization/images/streets.png");
+}
+
+.layer-item[bg-layer-name=satellite] .layer-image {
+    background-image: url("/static/data_visualization/images/satellite.png");
+}
+
+.layer-item[bg-layer-name=topo] .layer-image {
+    background-image: url("/static/data_visualization/images/topo.png");
+}
+
+.layer-item[bg-layer-name=openstreetmap] .layer-image {
+    background-image: url("/static/data_visualization/images/openstreetmap.png");
+}
+
+.offcanvas-body .collapse-header {
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.collapse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.collapse-header:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.offcanvas-body {
+    padding: 0 12px 16px 12px;
+}
+
+.offcanvas-body::-webkit-scrollbar {
+    display: none;
+    /* Ẩn thanh cuộn */
+}
+
+.layer-items {
+    padding: 0 8px;
+}
+
+.close-offcanvas-layer-btn {
+    background-color: #464646;
+    border-radius: 0;
+    font-size: 12px;
+    color: #fff;
+    /* margin-right: 8px; */
+}
+
+.thematic-layers .layer-item {
+    text-align: start;
+    margin-bottom: 16px;
+}
+
+
+.thematic-layers .layer-item .form-check {
+    text-align: start;
     font-size: 14px;
+    margin-bottom: 8px;
 }
 
-.btn-view-detail {
-    background-color: #007bff;
-    color: white;
-    border: none;
+.layer-item input {
+    margin-right: 12px;
 }
 
-.btn-view-detail:hover {
-    background-color: #0056b3;
+.layer-legend__item .tag-circle {
+    margin-right: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
-.btn-view-quick {
-    background-color: #28a745;
-    color: white;
-    border: none;
+.layer-legend__item .tag-square {
+    margin-right: 8px;
+    width: 12px;
+    height: 12px;
 }
 
-.btn-view-quick:hover {
-    background-color: #1e7e34;
+.layer-legend__item {
+    margin-left: 8px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+
 }
 
-/* Spinner tải */
-#loading-spinner {
+.legend-text {
+    margin-left: 12px;
+    font-size: 13px;
+}
+
+.data-info-table {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 400px;
+    background-color: #fff;
+    padding: 8px;
+    z-index: 2;
+}
+
+.data-info-table .data-info-table__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.data-info-table .data-info-table__nav p {
+    font-weight: 500;
+}
+
+.data-info-table .table {
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+.data-info-table .collapse-header {
+    padding: 3px 0;
+}
+
+.data-info-table .collapse-header:hover {
+    background-color: transparent;
+}
+
+#data-info-table__title {
+    font-size: 14px;
+    margin: 0;
+}
+
+.data-info-table__footer {
+    display: flex;
+    justify-content: end;
+}
+
+.data-info-table .table tbody {
+    font-size: 12px;
+}
+
+.chart-controll {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: end;
+}
+
+.chart-controll>div input {
+    margin-right: 8px;
+    border-radius: 0;
+    height: 32px !important;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    padding: 0px 8px;
+    outline: none;
+}
+
+/* .chart-controll>div select {
+    margin-right: 8px;
+    border-radius: 0;
+    height: 32px !important;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    padding: 0px 8px;
+    outline: none;
+} */
+
+.chart-controll>div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+}
+
+.chart-controll>div label {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.chart-controll .view-data-button {
+    border-radius: 0px;
+    height: 32px;
+    padding: 0px 16px;
+    background-color: green;
+    color: #fff;
+    font-size: 12px;
+}
+
+.loading-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     margin-top: 20px;
 }
 
-.spinner-border {
-    width: 3rem;
-    height: 3rem;
-    border-width: 0.3rem;
-    color: #007bff;
+.loading-box button {
+    height: 32px;
+    padding: 0px 12px;
+    margin-top: 8px;
+    border: none;
+    outline: none;
+    color: red;
+    border-radius: 0;
+    font-size: 13px;
 }
 
-.view-result-btn-quick:hover{
-    color: white;
+.data-info-table .collapse {
+    margin-bottom: 0px;
 }
 
-.d-flex {
+.data-info-table .error-text {
+    padding: 8px 0;
+    font-size: 13px;
+    text-align: center;
+}
+
+.modal .close-offcanvas-layer-btn:hover {
+    background-color: transparent;
+    color: black;
+}
+
+.legend-box {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 200px;
+    height: auto;
+    background-color: #fff;
+    z-index: 1;
+    padding: 0px 8px;
+}
+
+.legend-box .layer-legend p{
+    font-size: 12px;
+    color: #303130;
+    margin: 5px 0px;
+}
+
+.legend-box .layer-legend h6 {
+    font-size: 13px;
+    color: #303130;
+    margin: 10px 0px 0px 0px;
+}
+
+.legend-box .layer-legend{
+    margin: 10px 0px;
+}
+
+.fixed-div-open {
+    left: 308px;
+    transition: left 0.3s ease-in-out;
+}
+
+.fixed-div-close {
+    left: 8px;
+    transition: left 0.3s ease-in-out;
+}
+
+.layer-item.form-check.form-switch {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
-.d-flex .btn {
-    text-transform: uppercase;
-    font-weight: 600;
+.layer-legend__item .tag-triangle-up {
+    margin-right: 8px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 12px solid #fff;
+    align-items: center;       
+    justify-content: center;
 }
 
-.btn-primary {
-    font-size: 16px;
-    padding: 10px; 
-    border-radius: 0px;
-    flex: 1;
+.layer-legend__item .tag-triangle-down {
+    margin-right: 8px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 12px solid #fff;
+    align-items: center;       
+    justify-content: center;
 }
 
-.btn-danger {
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 0px;
-    background-color: #dc3545;
-    border-color: #dc3545;
-    flex: 1;
+.layer-legend__item .tag-line {
+    margin-right: 8px;
+    margin-left: 6px;
+    width: 3px;
+    height: 16px;
+    transform: rotate(45deg);
 }
 
-.btn-danger:hover {
-    background-color: #c82333;
-    border-color: #bd2130; 
-}
-#result-container {
-    margin: auto;
+.layer-legend__item .large_triangle {
+    margin:0px 9px 0px 1px; 
+    border-left: 5px solid transparent; 
+    border-right: 5px solid transparent; 
+    border-top: 10px solid  #ff0000;
+    border-bottom: 10px solid  #00ff40;
 }
 
-#result-list {
-    max-height: calc(67vh - 200px); /* Giới hạn chiều cao */
-    overflow-y: auto; /* Tạo thanh cuộn dọc nếu danh sách quá dài */
-    padding-bottom: 10px;
+.layer-legend__item .medium_triangle {
+    margin:0px 10px 0px 2px; 
+    border-left: 4px solid transparent; 
+    border-right: 4px solid transparent; 
+    border-top: 8px solid  #ff0000;
+    border-bottom: 8px solid  #00ff40;
+}
+
+.layer-legend__item .small_triangle {
+    margin:0px 11px 0px 3px; 
+    border-left: 3px solid transparent; 
+    border-right: 3px solid transparent; 
+    border-top: 6px solid  #ff0000;
+    border-bottom: 6px solid  #00ff40;
+}
+
+/* Cuộn legend */
+.legend-scrollable {
+    max-height: 580px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.legend-scrollable::-webkit-scrollbar {
+    display: none;
+}
+
+.legend-scrollable {
+    scrollbar-width: none;
 }
 
