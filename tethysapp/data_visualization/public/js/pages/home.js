@@ -29,94 +29,40 @@ var map = new maplibregl.Map({
                 tiles: ['https://api.maptiler.com/maps/openstreetmap/256/{z}/{x}/{y}.jpg?key=roY3b7JE1zbvrHutS87H'],
                 tileSize: 256,
             },
-            'zone-plan-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://api.mkdc.com.vn/geoserver/v1/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=phan_vung_quy_hoach'
-                ],
-                'tileSize': 256,
-            },
-            'sat-lo-duong-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=QH_SatLo_Duong'
-                ],
-                'tileSize': 256,
-            },
-            'sat-lo-diem-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=QH_SatLo_Diem'
-                ],
-                'tileSize': 256,
-            },
-            'monitoring-well-source': {
+            'all-hanoi-source': {
                 type: 'geojson',
-                data: 'https://gis.mkdc.com.vn/geoserver/data_visualization/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=data_visualization:monitoring_well_v3',
+                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:all_hanoi',
             },
-            'qp3-db-month-source': {
+            'hospital-source': {
+                type: 'geojson',
+                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:hospital',
+            },
+            'clinic-doctor-source':{
+                type: 'geojson',
+                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:clinic_doctor',
+            },
+            'pharmacy-source': {
+                type: 'geojson',
+                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:pharmacy',
+            },
+            'dentist-source': {
+                type: 'geojson',
+                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:dentist',
+            },
+            'population-source': {
                 'type': 'raster',
                 'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp3_MucNuoc_T9vsT8'
+                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=population_2020'
                 ],
                 'tileSize': 256,
             },
-            'qp3-db-year-source': {
+            'road-layer-source': {
                 'type': 'raster',
                 'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp3_Mucnuoc_T9_2024_2023'
-                ],
-                'tileSize': 256,
-            },
-            'qp3-db-5-year-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp3_Mucnuoc_T9_2024_2019'
-                ],
-                'tileSize': 256,
-            },
-            'qp3-db-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp3_DB_MucNuoc_T10'
-                ],
-                'tileSize': 256,
-            },
-            'qp23-db-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp23_DB_MucNuoc_T10'
-                ],
-                'tileSize': 256,
-            },
-            'qp1-db-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=qp1_DB_MucNuoc_T10'
-                ],
-                'tileSize': 256,
-            },
-            'n22-db-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://gis.mkdc.com.vn/geoserver/data_visualization/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=n22_DB_MucNuoc_T10'
-                ],
-                'tileSize': 256,
-            },
-            'qh-sut-lun-source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://api.mkdc.com.vn/geoserver/v1/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=sut_lun_dbscl'
-                ],
-                'tileSize': 256,
-            },
-            'diem_pvcnnn_source': {
-                'type': 'raster',
-                'tiles': [
-                    'https://api.mkdc.com.vn/geoserver/v1/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=diem_pvcnnn'
-                ],
-                'tileSize': 256,
+                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=	gis_osm_roads_free_1'
+                ]
             }
+            
         },
         layers: [
             {
@@ -159,51 +105,12 @@ var map = new maplibregl.Map({
                 }
             },
             {
-                'id': 'zone-plan',
-                'type': 'raster',
-                'source': 'zone-plan-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'sat-lo-duong',
-                'type': 'raster',
-                'source': 'sat-lo-duong-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none',
-                }
-            },
-            {
-                'id': 'sat-lo-diem',
-                'type': 'raster',
-                'source': 'sat-lo-diem-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                id: 'stations',
+                id: 'hospitals',
                 type: 'circle',
-                source: 'monitoring-well-source',
+                source: 'hospital-source',
                 paint: {
                     'circle-radius': 7,
-                    'circle-color': [
-                        'match',
-                        ['get', 'status'],
-                        'Dừng quan trắc', '#ff0000',
-                        'Đang hoạt động', '#00ff40',
-                        '#ffdd00'
-                    ],
+                    'circle-color': '#d73027',
                     'circle-stroke-width': 1,
                     'circle-stroke-color': '#ccc'
                 },
@@ -212,9 +119,52 @@ var map = new maplibregl.Map({
                 }
             },
             {
-                'id': 'qp3-db-month',
+                id: 'clinics-doctors',
+                type: 'circle',
+                source: 'clinic-doctor-source',
+                paint: {
+                    'circle-radius': 7,
+                    'circle-color': '#fc8d59',
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#ccc'
+                },
+                layout: {
+                    'visibility': 'none'
+                }
+            },
+            {
+                id: 'pharmacies',
+                type: 'circle',
+                source: 'pharmacy-source',
+                paint: {
+                    'circle-radius': 7,
+                    'circle-color': '#1a9850',
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#ccc'
+                },
+                layout: {
+                    'visibility': 'none'
+                }
+            },
+            {
+                id: 'dentists',
+                type: 'circle',
+                source: 'dentist-source',
+                paint: {
+                    'circle-radius': 7,
+                    // màu khác
+                    'circle-color': '#91bfdb',
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#ccc'
+                },
+                layout: {
+                    'visibility': 'none'
+                }
+            },
+            {
+                'id': 'population',
                 'type': 'raster',
-                'source': 'qp3-db-month-source',
+                'source': 'population-source',
                 'paint': {
                     'raster-opacity': 0.8
                 },
@@ -223,95 +173,20 @@ var map = new maplibregl.Map({
                 }
             },
             {
-                'id': 'qp3-db-year',
+                'id': 'road-layer',
                 'type': 'raster',
-                'source': 'qp3-db-year-source',
+                'source': 'road-layer-source',
                 'paint': {
                     'raster-opacity': 0.8
                 },
                 layout: {
                     'visibility': 'none'
-                }
-            },
-            {
-                'id': 'qp3-db-5-year',
-                'type': 'raster',
-                'source': 'qp3-db-5-year-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'qp3-db',
-                'type': 'raster',
-                'source': 'qp3-db-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'qp23-db',
-                'type': 'raster',
-                'source': 'qp23-db-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'qp1-db',
-                'type': 'raster',
-                'source': 'qp1-db-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'n22-db',
-                'type': 'raster',
-                'source': 'n22-db-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            },
-            {
-                'id': 'qh-sut-lun',
-                'type': 'raster',
-                'source': 'qh-sut-lun-source',
-                'paint': {
-                },
-                layout: {
-                    'visibility': 'none',
-                }
-            },
-            {
-                'id': 'diem_pvcnnn',
-                'type': 'raster',
-                'source': 'diem_pvcnnn_source',
-                'paint': {
-                },
-                layout: {
-                    'visibility': 'none',
                 }
             }
         ],
     },
     center: [105.854444, 21.028511],
-    zoom: 10,
+    zoom: 8,
 });
 
 // Thêm control trên bản đồ
