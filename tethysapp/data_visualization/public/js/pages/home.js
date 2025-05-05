@@ -59,7 +59,7 @@ var map = new maplibregl.Map({
             'road-layer-source': {
                 'type': 'raster',
                 'tiles': [
-                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=	gis_osm_roads_free_1'
+                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gis_osm_roads_free_1'
                 ]
             }
             
@@ -106,13 +106,13 @@ var map = new maplibregl.Map({
             },
             {
                 id: 'hospitals',
-                type: 'circle',
+                type: 'fill',
                 source: 'hospital-source',
                 paint: {
-                    'circle-radius': 7,
-                    'circle-color': '#d73027',
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': '#ccc'
+                    // 'circle-radius': 7,
+                    'fill-color': '#d73027',
+                    // 'circle-stroke-width': 1,
+                    // 'circle-stroke-color': '#ccc'
                 },
                 layout: {
                     'visibility': 'none'
@@ -238,121 +238,112 @@ $(document).ready(function () {
 
 // Giả sử bạn đã có một layer 'stations' với source là 'monitoring-stations'
 
-map.on('mouseenter', 'stations', () => {
+map.on('mouseenter', 'hospitals', () => {
     map.getCanvas().style.cursor = 'pointer'; // Chỉ định cursor là 'pointer'
 });
 
 // Khôi phục cursor về mặc định khi không hover
-map.on('mouseleave', 'stations', () => {
+map.on('mouseleave', 'hospitals', () => {
     map.getCanvas().style.cursor = ''; // Khôi phục cursor về mặc định
 });
 
-let current_well_code;
+let current_id;
 
 // Thêm sự kiện click điểm quan trắc trên bản đồ
-map.on('click', 'stations', (e) => {
+map.on('click', 'hospitals', (e) => {
     // Lấy thông tin của điểm được nhấn
     const features = map.queryRenderedFeatures(e.point, {
-        layers: ['stations'],
+        layers: ['hospitals'],
 
     });
     console.log(features);
+
     if (features.length > 0) {
         const feature = features[0];
+        console.log(feature);
 
-        if (current_well_code == feature.properties.well_code) {
+        if (current_id == feature.properties.id) {
             return;
         }
 
-        current_well_code = feature.properties.well_code;
+        current_id == feature.properties.id;
 
 
         var address = '';
 
-        if (feature.properties.commune) {
-            if (feature.properties.commune.toString().trim().length > 0) {
-                address += feature.properties.commune.toString().trim() + ', ';
+        if (feature.properties["addr:housenumber"]) {
+            if (feature.properties["addr:housenumber"].toString().trim().length > 0) {
+                address += feature.properties["addr:housenumber"].toString().trim() + ', ';
             }
         }
 
-        if (feature.properties.district) {
-            if (feature.properties.district.toString().trim().length > 0) {
-                address += feature.properties.district.toString().trim() + ', ';
+        if (feature.properties["addr:street"]) {
+            if (feature.properties["addr:street"].toString().trim().length > 0) {
+                address += feature.properties["addr:street"].toString().trim() + ', ';
             }
         }
 
-        if (feature.properties.province) {
-            if (feature.properties.province.toString().trim().length > 0) {
-                address += feature.properties.province.toString().trim();
+        if (feature.properties["addr:subdistrict"]) {
+            if (feature.properties["addr:subdistrict"].toString().trim().length > 0) {
+                address += feature.properties["addr:subdistrict"].toString().trim() + ', ';
             }
         }
+
+        if (feature.properties["addr:district"]) {
+            if (feature.properties["addr:district"].toString().trim().length > 0) {
+                address += feature.properties["addr:district"].toString().trim() + ', ';
+            }
+        }
+        if (feature.properties["addr:city"] || feature.properties["addr:province"]) {
+            if (feature.properties["addr:city"].toString().trim().length > 0) {
+                address += feature.properties["addr:city"].toString().trim();
+            }
+        }
+
+        const healthcareMapping = {
+            "hospital": "Bệnh viện",
+            "clinic": "Trạm xá",
+            "doctor": "Phòng khám bác sĩ",
+            "pharmacy": "Nhà thuốc",
+            "dentist": "Nha sĩ",
+        };
+
+        // Kiểm tra và thay đổi giá trị cho 'healthcare' hoặc 'amenity'
+        let healthcareType = feature.properties.healthcare || feature.properties.amenity;
+
+        if (healthcareType) {
+            // Nếu có giá trị trong healthcare hoặc amenity, thay thế bằng tiếng Việt
+            healthcareType = healthcareMapping[healthcareType.toLowerCase()] || healthcareType; // Nếu không có trong mapping, giữ nguyên giá trị gốc
+        }
+
 
         // Tạo nội dung bảng
         const tableContent = `
             <tr>
-                <td>Mã trạm</td>
-                <td>${feature.properties.well_code || ''}</td>
+                <td>Mã địa lý</td>
+                <td>${feature.properties.id || ''}</td>
             </tr>
             <tr>
-                <td>Loại trạm</td>
-                <td>${feature.properties.objective || ''}</td>
+                <td>Loại</td>
+                <td>${healthcareType ||''}</td>
+            </tr>
+            <tr>
+                <td>Đối tượng đặc biệt</td>
+                <td>${feature.properties["healthcare:speciality"] || ''}</td>
             </tr>
             <tr>
                 <td>Địa chỉ</td>
                 <td>${address || ''}</td>
             </tr>
             <tr>
-                <td>Hiện trạng</td>
-                <td>${feature.properties.status || ''}</td>
+                <td>Tên</td>
+                <td>${feature.properties.name || ''}</td>
             </tr>
             <tr>
-                <td>Lưu vực</td>
-                <td>${feature.properties.watershed || ''}</td>
-            </tr>
-            <tr>
-                <td>Tầng chứa nước quan trắc</td>
-                <td>${feature.properties.water_layer || ''}</td>
-            </tr>
-            <tr>
-                <td>Ngày bắt đầu hoạt động</td>
-                <td>${feature.properties.start_date ? feature.properties.start_date.replace("Z", "") : ''}</td>
+                <td>Liên lạc</td>
+                <td>${feature.properties.phone || feature.properties.mobile || feature.properties["contact:phone"] ||''}</td>
             </tr>
         `;
-
-
-        // Hủy request hiện tại
-        try {
-            if (wl_last_ajax_request) {
-                wl_last_ajax_request.abort();
-            }
-            else if (tl_last_ajax_request) {
-                tl_last_ajax_request.abort();
-            }
-            else if (cl_last_ajax_request) {
-                cl_last_ajax_request.abort();
-            }
-        } catch (e) { }
-
-        // Hủy chart
-        try {
-            if (water_level_chart) {
-                water_level_chart.destroy();
-            }
-            else if (temp_level_chart) {
-                temp_level_chart.destroy();
-            }
-            else if (water_chemistry_chart) {
-                water_chemistry_chart.destroy();
-            }
-        } catch (e) { }
-
-        // Click 2 nút xem
-        $('#view-water-level-button').trigger('click');
-        $('#view-water-temp-button').trigger('click');
-        $('#view-water-chemistry-button').trigger('click');
-
-        // showWaterLevelChartItem();
-        // showTempLevelChartItem();
 
         $('.data-info-table').removeClass('d-none');
         $('.data-info-table .table tbody').html(tableContent);
@@ -362,390 +353,3 @@ map.on('click', 'stations', (e) => {
 $('#data-info-table__close-btn').on('click', function () {
     $('.data-info-table').addClass('d-none');
 });
-
-// Xử lý biểu đồ mực nước cho điểm quan trắc
-var water_level_chart;
-var wl_last_ajax_request;
-
-function showWaterLevelChartItem(class_name) {
-    // Ẩn text error
-    $(`#water-level-collapse .error-text`).addClass('d-none');
-
-    // Ẩn chart
-    $(`#water-level-collapse canvas`).addClass('d-none');
-
-    // Ẩn loading
-    $(`#water-level-collapse .loading-box`).addClass('d-none');
-
-    if (class_name) {
-        $(`#water-level-collapse ${class_name}`).removeClass('d-none');
-    }
-}
-
-function showWaterLevelChart(well_code, start, end) {
-    try {
-        if (wl_last_ajax_request) {
-            wl_last_ajax_request.abort();
-        }
-    } catch (error) { }
-
-    wl_last_ajax_request = $.ajax({
-        url: `/apps/data_visualization/api/monitoring-well/${well_code}/water-level?start=${start}&end=${end}`,
-        method: 'GET',
-        success: function (res) {
-            // Hiển thị chart
-            showWaterLevelChartItem('canvas');
-
-            var data = res['data'];
-            water = data.data;
-
-            try {
-                water_level_chart.destroy();
-            } catch (e) { }
-
-            water_level_chart = drawLineChart('water-level-chart', water.map(item => ({
-                datetime: item.datetime,
-                value: item.water_level
-            })), 'Mực nước', 'Mực nước');
-
-        },
-        error: function (error) {
-            // Hiện text error
-            showWaterLevelChartItem('.error-text');
-        }
-    });
-}
-
-$('#view-water-level-button').on('click', function () {
-
-    // Lấy start time
-    let start_date = $('#water-level-collapse .start-date').val();
-
-    // Lấy end time
-    let end_date = $('#water-level-collapse .end-date').val();
-
-    if (validateStartToEndDate(start_date, end_date)) {
-        showWaterLevelChart(current_well_code, start_date, end_date);
-
-        // Đặt lại error text 
-        $('#water-level-collapse .error-text').text('Có lỗi xảy ra, vui lòng thử lại!');
-
-        showWaterLevelChartItem('.loading-box');
-    } else {
-        $('#water-level-collapse .error-text').text('Ngày bắt đầu phải nhỏ hơn ngày kết thúc');
-        showWaterLevelChartItem('.error-text');
-    }
-
-});
-
-$('#water-level-collapse .cancel-button').on('click', function () {
-    try {
-        if (wl_last_ajax_request) {
-            wl_last_ajax_request.abort();
-        }
-    } catch (error) { }
-
-    showWaterLevelChartItem();
-});
-
-// Xử lý biểu đồ nhiệt độ cho điểm quan trắc
-var temp_level_chart;
-var tl_last_ajax_request;
-
-function showTempLevelChartItem(class_name) {
-    // Ẩn text error
-    $(`#water-temp-collapse .error-text`).addClass('d-none');
-
-    // Ẩn chart
-    $(`#water-temp-collapse canvas`).addClass('d-none');
-
-    // Ẩn loading
-    $(`#water-temp-collapse .loading-box`).addClass('d-none');
-
-    if (class_name) {
-        $(`#water-temp-collapse ${class_name}`).removeClass('d-none');
-    }
-}
-
-function showTempLevelChart(well_code, start, end) {
-    try {
-        if (tl_last_ajax_request) {
-            tl_last_ajax_request.abort();
-        }
-    } catch (error) { }
-
-    tl_last_ajax_request = $.ajax({
-        url: `/apps/data_visualization/api/monitoring-well/${well_code}/water-temperature?start=${start}&end=${end}`,
-        method: 'GET',
-        success: function (res) {
-            // Hiển thị chart
-            showTempLevelChartItem('canvas');
-
-            var data = res['data'];
-            temp = data.data;
-
-            try {
-                water_temp_chart.destroy();
-            } catch (e) { }
-
-            water_temp_chart = drawLineChart('water-temp-chart', temp.map(item => ({
-                datetime: item.datetime,
-                value: item.temperature
-            })), 'Nhiệt độ', 'Nhiệt độ');
-
-        },
-        error: function (error) {
-            // Hiện text error
-            showTempLevelChartItem('.error-text');
-        }
-    });
-}
-
-$('#view-water-temp-button').on('click', function () {
-
-    // Lấy start time
-    let start_date = $('#water-temp-collapse .start-date').val();
-
-    // Lấy end time
-    let end_date = $('#water-temp-collapse .end-date').val();
-
-    if (validateStartToEndDate(start_date, end_date)) {
-        showTempLevelChart(current_well_code, start_date, end_date);
-
-        // Đặt lại error text 
-        $('#water-temp-collapse .error-text').text('Có lỗi xảy ra, vui lòng thử lại!');
-
-        showTempLevelChartItem('.loading-box');
-    } else {
-        $('#water-temp-collapse .error-text').text('Ngày bắt đầu phải nhỏ hơn ngày kết thúc');
-        showTempLevelChartItem('.error-text');
-    }
-});
-
-$('#water-temp-collapse .cancel-button').on('click', function () {
-    try {
-        if (tl_last_ajax_request) {
-            tl_last_ajax_request.abort();
-        }
-    } catch (error) { }
-
-    showTempLevelChartItem();
-});
-
-// Xử lý biểu đồ hóa học cho trạm quan trắc
-var water_chemistry_chart;
-var cl_last_ajax_request;
-
-function showChemicalChartItem(class_name) {
-    // Ẩn text error
-    $(`#water-chemistry-collapse .error-text`).addClass('d-none');
-
-    // Ẩn chart
-
-    $(`#water-chemistry-collapse canvas`).addClass('d-none');
-
-    // Ẩn loading
-
-    $(`#water-chemistry-collapse .loading-box`).addClass('d-none');
-
-    if (class_name) {
-        $(`#water-chemistry-collapse ${class_name}`).removeClass('d-none');
-    }
-}
-
-// Hàm lấy danh sách thông số hóa học vào select
-function loadChemistryParameters() {
-    $.ajax({
-        url: `/apps/data_visualization/api/monitoring-well/${well_code}/water-chemistry?start=${start}&end=${end}`,
-        method: 'GET',
-        success: function (res) {
-            var parameters = res['data'];  // Giả sử dữ liệu trả về là mảng các thông số
-            var selectElement = document.getElementById('parameter-chemistry');
-
-            console.log(parameters);
-
-            // // Xóa các tùy chọn cũ (nếu có)
-            // selectElement.innerHTML = '<option value="">--Chọn thông số--</option>';
-
-            for (var key in data) {
-                if (data[key] !== null) {
-                    var option = document.createElement('option');
-                    option.value = key;
-                    option.text = key.toUpperCase();
-                    selectElement.appendChild(option);
-                }
-            }
-        },
-        error: function (error) {
-            console.error('Lỗi khi lấy thông số hóa học:', error);
-        }
-    });
-}
-
-function showChemicalChart(well_code, start, end) {
-    try {
-        if (cl_last_ajax_request) {
-            cl_last_ajax_request.abort();
-        }
-    }
-    catch (error) { }
-
-    cl_last_ajax_request = $.ajax({
-        url: `/apps/data_visualization/api/monitoring-well/${well_code}/water-chemistry?start=${start}&end=${end}`,
-        method: 'GET',
-        success: function (res) {
-            // Hiển thị chart
-            showChemicalChartItem('canvas');
-
-            var data = res['data'];
-            chemistry = data.data;
-
-            try {
-                water_chemistry_chart.destroy();
-            } catch (e) { }
-
-            water_chemistry_chart = drawLineChart('water-chemistry-chart', chemistry.map(item => ({
-                datetime: item.datetime,
-                value: item.water_chemistry
-            })), 'Hóa học', 'Hóa học');
-
-        },
-        error: function (error) {
-            // Hiện text error
-            showChemicalChartItem('.error-text');
-        }
-
-    });
-}
-
-$('#view-water-chemistry-button').on('click', function () {
-
-    // Lấy start time
-    let start_date = $('#water-chemistry-collapse .start-date').val();
-
-    // Lấy end time
-    let end_date = $('#water-chemistry-collapse .end-date').val();
-
-    if (validateStartToEndDate(start_date, end_date)) {
-        showChemicalChart(current_well_code, start_date, end_date);
-
-        // Đặt lại error text
-        $('#water-chemistry-collapse .error-text').text('Có lỗi xảy ra, vui lòng thử lại!');
-
-        showChemicalChartItem('.loading-box');
-    } else {
-        $('#water-chemistry-collapse .error-text').text('Ngày bắt đầu phải nhỏ hơn ngày kết thúc');
-
-        showChemicalChartItem('.error-text');
-    }
-});
-
-
-$('#water-chemistry-collapse .cancel-button').on('click', function () {
-    try {
-        if (cl_last_ajax_request) {
-            cl_last_ajax_request.abort();
-        }
-    }
-    catch (error) { }
-
-    showChemicalChartItem();
-});
-
-function validateStartToEndDate(start_date, end_date) {
-    if (start_date && end_date) {
-        let start = new Date(start_date);
-        let end = new Date(end_date);
-
-        if (start <= end) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    return false;
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = ('0' + date.getDate()).slice(-2); // Lấy ngày với định dạng 2 chữ số
-    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Lấy tháng với định dạng 2 chữ số
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`; // Định dạng dd/mm/yyyy
-}
-// Hàm vẽ biểu đồ
-function drawLineChart(element_id, data, label, yTitle) {
-    const labels = data.map(item => item.datetime); // Các nhãn (thời gian)
-    const levels = data.map(item => item.value); // Giá trị (mực nước hoặc nhiệt độ)
-
-    // var chart_element = document.getElementById(element_id).getContext("2d");
-    var chart_element = document.querySelector(`#${element_id}`).getContext("2d");
-
-    return new Chart(chart_element, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: label,
-                data: levels,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderWidth: 1,
-                fill: false,
-                pointRadius: 0,
-                pointHoverRadius: 0,
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Thời gian'
-                    },
-                    ticks: {
-                        callback: function (value, index, ticks) {
-                            return formatDate(labels[index]); // Hiển thị thời gian dạng dd/mm/yyyy trên trục x
-                        },
-                        display: true,
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    title: {
-                        display: true,
-                        text: yTitle
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: 'xy' // Cho phép di chuyển theo cả hai hướng
-                    },
-                    zoom: {
-                        enabled: true,
-                        mode: 'xy', // Cho phép phóng to theo cả hai hướng
-                        wheel: {
-                            enabled: true, // Bật tính năng phóng to bằng bánh xe chuột
-                        },
-                        pinch: {
-                            enabled: true, // Bật tính năng phóng to bằng thao tác chụm trên thiết bị cảm ứng
-                        },
-                        drag: {
-                            enabled: true, // Bật tính năng phóng to bằng thao tác kéo
-                        }
-                    }
-                }
-            }
-        }
-    });
-}

@@ -252,11 +252,11 @@
                     <div class="water-10-layers layer-items">
                         <div class="layer-item form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="switch-population"/>
-                            <label class="form-check-label" for="switch-population">Tầng qp3 - Sơ đồ diễn biến mực nước tháng 9</label>
+                            <label class="form-check-label" for="switch-population">Mật độ dân số</label>
                         </div>
                         <div class="layer-item form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="switch-road-layer" />
-                            <label class="form-check-label" for="switch-road-layer">Tầng qp3 - Sơ đồ diễn biến mực nước tháng 9</label>
+                            <label class="form-check-label" for="switch-road-layer">Mạng lưới giao thông đường bộ</label>
                         </div>
                         
                     </div>
@@ -483,33 +483,6 @@
                 toggleLayer(layer.switchId, layer.layerId);
             });
         });
-
-        // Hàm lấy ngày hiện tại
-        function getCurrentDate() {
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const year = today.getFullYear();
-            return `${year}-${month}-${day}`;
-        }
-
-        // Hàm tính ngày cách đây 3 tháng
-        function getEndDateThreeMonthsAgo() {
-            const today = new Date();
-            today.setMonth(today.getMonth() - 6); // Lùi lại 3 tháng
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // Tháng từ 0 đến 11, cần +1
-            const year = today.getFullYear();
-            return `${year}-${month}-${day}`;
-        }
-
-        // Lấy ngày hiện tại và ngày cách đây 3 tháng
-        const end_date = getCurrentDate();
-        const start_date = getEndDateThreeMonthsAgo();
-
-        // Sử dụng jQuery để đặt ngày
-        $('.start-date').val(start_date);
-        $('.end-date').val(end_date);
     });
 </script>
 
