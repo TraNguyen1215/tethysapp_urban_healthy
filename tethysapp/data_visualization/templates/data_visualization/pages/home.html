@@ -26,127 +26,6 @@
             </tr>
         </tbody>
     </table>
-
-    <!-- Dữ liệu mực nước -->
-    <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-level-collapse" aria-expanded="false" aria-controls="water-level-collapse">
-        <div class="data-info-table__nav">
-            <p id="data-info-table__title">Dữ liệu Mực nước</p>
-        </div>
-        <span class="icon" id="water-level-toggle-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </span>
-    </div>
-    <div class="collapse multi-collapse" id="water-level-collapse">
-        <div class="chart-controll">
-            <div>
-                <label>Từ ngày</label>
-                <input class="start-date" type="date" name="" id="">
-            </div>
-            <div>
-                <label>Đến ngày</label>
-                <input class="end-date" type="date" name="" id="">
-            </div>
-            <button class="btn view-data-button" id="view-water-level-button">Xem</button>
-        </div>
-
-        <div class="loading-box d-none">
-            <div class="spinner-border text-info" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <button class="btn cancel-button">Hủy</button>
-        </div>
-
-        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
-        
-        <canvas id="water-level-chart" class="d-none"></canvas>
-    </div>
-    
-    <!-- Dữ liệu nhiệt độ -->
-    <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-temp-collapse" aria-expanded="false" aria-controls="water-temp-collapse">
-        <div class="data-info-table__nav">
-            <p id="data-info-table__title">Dữ liệu Nhiệt độ</p>
-        </div>
-        <span class="icon" id="water-temp-toggle-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </span>
-    </div>
-    
-    <div class="collapse multi-collapse" id="water-temp-collapse">
-        <div class="chart-controll">
-            <div>
-                <label>Từ ngày</label>
-                <input class="start-date" type="date" name="" id="">
-            </div>
-            <div>
-                <label>Đến ngày</label>
-                <input class="end-date" type="date" name="" id="">
-            </div>
-            <button class="btn view-data-button" id="view-water-temp-button">Xem</button>
-        </div>
-        
-        <div class="loading-box d-none">
-            <div class="spinner-border text-info" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <button class="btn cancel-button">Hủy</button>
-        </div>
-        
-        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
-        
-        <canvas id="water-temp-chart" class="d-none"></canvas>
-    </div>
-
-    <!-- Dữ liệu hóa học -->
-    <!-- <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-chemistry-collapse" aria-expanded="false"
-        aria-controls="water-chemistry-collapse">
-        <div class="data-info-table__nav">
-            <p id="data-info-table__title">Dữ liệu Hóa học</p>
-        </div>
-        <span class="icon" id="water-chemistry-toggle-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
-                viewBox="0 0 16 16">
-                <path fill-rule="evenodd"
-                    d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-            </svg>
-        </span>
-    </div>
-    
-    <div class="collapse multi-collapse" id="water-chemistry-collapse">
-        <div class="chart-controll">
-            <div>
-                <label>Từ ngày</label>
-                <input class="start-date" type="date" name="" id="">
-            </div>
-            <div>
-                <label>Đến ngày</label>
-                <input class="end-date" type="date" name="" id="">
-            </div>
-            <button class="btn view-data-button" id="view-water-chemistry-button">Xem</button>
-        </div>
-        <div class="chart-controll">
-            <div>
-                <label>Thông số</label>
-                <select id="parameter-chemistry" class="parameter">
-                    <option value="1">---Chọn thông số---</option>
-                </select>
-            </div>
-        </div>
-    
-        <div class="loading-box d-none">
-            <div class="spinner-border text-info" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <button class="btn cancel-button">Hủy</button>
-        </div>
-    
-        <p class="error-text d-none">Có lỗi xảy ra, vui lòng thử lại!</p>
-    
-        <canvas id="water-chemistry-chart" class="d-none"></canvas>
-    </div> -->
 </div>
 
 <!-- Offcanvas chọn layer -->
@@ -159,7 +38,65 @@
     </div>
     <div class="offcanvas-body">
         <!-- Hiển thị các thành phần bản đồ -->
-        <!-- Lớp mạng lưới trạm quan trắc -->
+        <!-- Tìm kiếm  -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#search-collapse" aria-expanded="false"
+            aria-controls="search-collapse">
+            <div class="d-flex" style="align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+                    <path
+                        d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+                </svg>
+                <h6 style="margin-left: 8px;">Tìm kiếm</h6>
+            </div>
+            <span class="icon" id="search-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="search-collapse">
+            <form id="search-form" class="p-3">
+                <div class="mb-3">
+                    <label for="search-keyword" class="form-label">Từ khóa</label>
+                    <input type="text" class="form-control" id="search-keyword" placeholder="Nhập tên cơ sở...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Loại cơ sở</label>
+                    <div id="type-checkboxes">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="hospital" id="type-hospital">
+                            <label class="form-check-label" for="type-hospital">Bệnh viện</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="clinic" id="type-clinic">
+                            <label class="form-check-label" for="type-clinic">Phòng khám</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="pharmacy" id="type-pharmacy">
+                            <label class="form-check-label" for="type-pharmacy">Nhà thuốc</label>
+                        </div>
+                        <!-- Thêm loại khác tùy vào dữ liệu -->
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="search-location" class="form-label">Tọa độ hoặc địa chỉ</label>
+                    <input type="text" class="form-control" id="search-location"
+                        placeholder="Ví dụ: 10.762622, 106.660172 hoặc 'Bệnh viện Chợ Rẫy'">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+            </form>
+        </div>
+
+
+        <hr>
+        <!-- Lớp mạng lưới cơ sở y tế -->
         <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#network-layer-collapse" aria-expanded="false" aria-controls="network-layer-collapse">
             <div class="d-flex" style="align-items: center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
@@ -224,7 +161,7 @@
                     <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
                     <path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
                 </svg>
-                <h6 style="margin-left: 8px;">Chuyên đề dự báo cảnh báo</h6>
+                <h6 style="margin-left: 8px;">Mật độ dân số 1km năm 2020 </h6>
             </div>
             <span class="icon" id="forecast-layer-toggle-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
@@ -236,30 +173,9 @@
         </div>
         <div class="collapse multi-collapse" id="forecast-layer-collapse">
             <div class="forecast-layers layer-items" style="padding-right:0px ;">
-                <!-- Dự báo mực nước tháng 10 -->
-                <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#water-10-collapse" aria-expanded="false"
-                    aria-controls="water-10-collapse">
-                    <h6>Dự báo mực nước tháng 10/2024</h6>
-                    <span class="icon" id="water-10-toggle-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
-                            viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-                        </svg>
-                    </span>
-                </div>
-                <div class="collapse multi-collapse" id="water-10-collapse">
-                    <div class="water-10-layers layer-items">
-                        <div class="layer-item form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="switch-population"/>
-                            <label class="form-check-label" for="switch-population">Mật độ dân số</label>
-                        </div>
-                        <div class="layer-item form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="switch-road-layer" />
-                            <label class="form-check-label" for="switch-road-layer">Mạng lưới giao thông đường bộ</label>
-                        </div>
-                        
-                    </div>
+                <div class="layer-item form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="switch-population" />
+                    <label class="form-check-label" for="switch-population">Mật độ dân số</label>
                 </div>
             </div>
         </div>
@@ -313,39 +229,51 @@
 <div class="legend-box">
     <div class="legend-scrollable">
             <!-- Mực nước T10 - tầng q3-->
-            <div class="d-none" id="water-4">
-                <p class="mt-2"><i>Mực nước T10 - Tầng q3</i></p>
+            <div class="" id="water-4">
+                <p class="mt-2 fw-bold text-primary">Mật độ dân số 2020 (người/km²)</p>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-up" style="border-bottom-color: #00ff40;border-top:0px"></div>
-                    <span class="legend-text">Dâng từ 1.0 đến < 2.0</span>
+                    <div class="tag-square" style="background-color: #ffffcc;"></div>
+                    <span class="legend-text">0 - 10</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-up large_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
-                    <span class="legend-text">Dâng từ 0.5 đến < 1.0</span>
+                    <div class="tag-square" style="background-color: #e0f3db;"></div>
+                    <span class="legend-text">10 - 50</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-up medium_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
-                    <span class="legend-text">Dâng từ 0.2 đến < 0.5</span>
+                    <div class="tag-square" style="background-color: #ccebc5;"></div>
+                    <span class="legend-text">50 - 100</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-up small_triangle" style="border-bottom-color: #00ff40;border-top:0px"></div>
-                    <span class="legend-text">Dâng từ 0.05 đến < 0.2</span>
+                    <div class="tag-square" style="background-color: #a8ddb5;"></div>
+                    <span class="legend-text">100 - 500</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #00ff40; width:10px; height:10px; margin-left:1px"></div>
-                    <span class="legend-text">Dâng hạ không đáng kể</span>
+                    <div class="tag-square" style="background-color: #7bccc4;"></div>
+                    <span class="legend-text">500 - 1000</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-down medium_triangle" style="border-bottom:0px"></div>
-                    <span class="legend-text">Hạ từ 0.05 đến < 0.2</span>
-                </div>
-                <div class="layer-legend__item large_triangle">
-                    <div class="tag-triangle-down" style="border-top-color: #ff0000;border-bottom:0px"></div>
-                    <span class="legend-text">Hạ từ 0.2 đến < 0.5</span>
+                    <div class="tag-square" style="background-color: #4eb3d3;"></div>
+                    <span class="legend-text">1000 - 5000</span>
                 </div>
                 <div class="layer-legend__item">
-                    <div class="tag-triangle-down" style="border-top-color: #ff0000; border-bottom:0px"></div>
-                    <span class="legend-text">Hạ từ 1.0 đến < 2.0</span>
+                    <div class="tag-square" style="background-color: #2b8cbe;"></div>
+                    <span class="legend-text">5000 - 10000</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #0868ac;"></div>
+                    <span class="legend-text">10000 - 20000</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #084081;"></div>
+                    <span class="legend-text">20000 - 50000</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #081d58;"></div>
+                    <span class="legend-text">50000 - 100000</span>
+                </div>
+                <div class="layer-legend__item">
+                    <div class="tag-square" style="background-color: #041b4d;"></div>
+                    <span class="legend-text">> 100000</span>
                 </div>
             </div>
         <!-- <div class="layer-legend__item" id="item_13">
@@ -421,8 +349,7 @@
         setupCollapseToggle("#thematic-layer-collapse", "#thematic-layer-toggle-icon");
         setupCollapseToggle("#network-layer-collapse", "#network-layer-toggle-icon");
         setupCollapseToggle("#water-level-collapse", "#water-level-toggle-icon");
-        setupCollapseToggle("#water-temp-collapse", "#water-temp-toggle-icon");
-        setupCollapseToggle("water_chemistry-collapse", "#water-chemistry-toggle-icon");
+        setupCollapseToggle("#search-collapse", "#search-toggle-icon");
 
         function setupCollapseToggle(collapseId, toggleIconId, useStopPropagation = false) {
             // Lắng nghe sự kiện mở - đóng collapse
@@ -466,12 +393,11 @@
             // Ẩn toàn bộ legend nếu không có lớp nào được bật
             $(legend).addClass("d-none");
         }
-    }
+        }
 
         // Gán sự kiện click cho tất cả các switch
         const layers = [
             { switchId: "switch-population", layerId: "population" },
-            { switchId: "switch-road-layer", layerId: "road-layer" },
             { switchId: "switch-01", layerId: "hospital-points"},
             { switchId: "switch-01", layerId: "hospital-polygons"},
             { switchId: "switch-02", layerId: "clinics-doctors-points"},
@@ -487,7 +413,61 @@
                 toggleLayer(layer.switchId, layer.layerId);
             });
         });
+
+        // cho các layer lên trước
+        const layersToBringToFront = [
+            "hospital-points",
+            "hospital-polygons",
+            "clinics-doctors-points",
+            "clinics-doctors-polygons",
+            "dentists-points",
+            "dentists-polygons",
+            "pharmacies-points",
+            "pharmacies-polygons"
+        ];
+        layersToBringToFront.forEach(function(layer) {
+            map.moveLayer(layer);
+        });
+
     });
+    document.querySelector('#search-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const keyword = document.querySelector('#search-keyword').value.toLowerCase();
+            const type = document.querySelector('#search-type').value;
+            const locationInput = document.querySelector('#search-location').value.trim();
+
+            const filters = ['all'];
+            if (type) filters.push(['==', ['get', 'type'], type]);
+            if (keyword) filters.push(['in', keyword, ['downcase', ['get', 'name']]]);
+
+            map.setFilter('hospital-points', ['all', ['==', ['geometry-type'], 'Point'], ...filters]);
+            map.setFilter('hospital-polygons', ['all', ['==', ['geometry-type'], 'Polygon'], ...filters]);
+            map.setFilter('hospital-borders', ['all', ['==', ['geometry-type'], 'Polygon'], ...filters]);
+
+            // Xử lý tìm kiếm vị trí (tọa độ hoặc địa chỉ)
+            if (locationInput) {
+                const coordMatch = locationInput.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+                if (coordMatch) {
+                    const lat = parseFloat(coordMatch[1]);
+                    const lng = parseFloat(coordMatch[3]);
+                    map.flyTo({ center: [lng, lat], zoom: 15 });
+                    new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
+                } else {
+                    // Nếu không phải tọa độ, gọi HERE API để geocode địa chỉ
+                    const query = encodeURIComponent(locationInput);
+                    const res = await fetch(`https://geocode.search.hereapi.com/v1/geocode?q=${query}&apiKey=YOUR_HERE_API_KEY`);
+                    const data = await res.json();
+                    if (data.items && data.items.length > 0) {
+                        const position = data.items[0].position;
+                        map.flyTo({ center: [position.lng, position.lat], zoom: 15 });
+                        new mapboxgl.Marker().setLngLat([position.lng, position.lat]).addTo(map);
+                    } else {
+                        alert('Không tìm thấy địa điểm.');
+                    }
+                }
+            }
+        });
 </script>
 
 <script src="{% static 'data_visualization/js/pages/home.js' %}"></script>

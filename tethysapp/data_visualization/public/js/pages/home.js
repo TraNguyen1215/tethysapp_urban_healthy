@@ -268,27 +268,27 @@ var map = new maplibregl.Map({
                 'type': 'raster',
                 'source': 'population-source',
                 'paint': {
-                    'raster-opacity': 0.8
+                    'raster-opacity': 0.6
                 },
                 layout: {
                     'visibility': 'none'
                 }
             },
-            {
-                'id': 'road-layer',
-                'type': 'raster',
-                'source': 'road-layer-source',
-                'paint': {
-                    'raster-opacity': 0.8
-                },
-                layout: {
-                    'visibility': 'none'
-                }
-            }
+            // {
+            //     'id': 'road-layer',
+            //     'type': 'raster',
+            //     'source': 'road-layer-source',
+            //     'paint': {
+            //         'raster-opacity': 0.8
+            //     },
+            //     layout: {
+            //         'visibility': 'none'
+            //     }
+            // }
         ],
     },
     center: [105.854444, 21.028511],
-    zoom: 8,
+    zoom: 12,
 });
 
 // Thêm control trên bản đồ
@@ -346,7 +346,7 @@ const healthcareMapping = {
     "dentist": "Nha khoa",
 };
 
-const layers = ['hospital-points', 'hospital-polygons', 'clinics-doctors-points', 'clinics-doctors-polygons', 'pharmacies-points', 'pharmacies-polygons', 'dentists-points', 'dentists-polygons'];
+const layers = ['hospital-points', 'hospital-polygons', 'clinics-doctors-points', 'clinics-doctors-polygons', 'pharmacies-points', 'pharmacies-polygons', 'dentists-points', 'dentists-polygons', 'population'];
 
 let current_id = null;
 
@@ -409,6 +409,48 @@ layers.forEach(layer => {
         }
     });
 });
+
+map.on('click', function (e) {
+    const bbox = map.getBounds().toArray().flat();
+    const width = map.getContainer().clientWidth;
+    const height = map.getContainer().clientHeight;
+
+    const x = Math.round(e.point.x);
+    const y = Math.round(e.point.y);
+
+    const url = `http://localhost:8080/geoserver/health_map/wms?` +
+        `SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo` +
+        `&FORMAT=image/png&TRANSPARENT=true` +
+        `&QUERY_LAYERS=population_2020` +
+        `&LAYERS=population_2020` +
+        `&INFO_FORMAT=application/json` +
+        `&SRS=EPSG:3857` +
+        `&WIDTH=${width}&HEIGHT=${height}` +
+        `&X=${x}&Y=${y}` +
+        `&BBOX=${bbox.join(',')}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.features && data.features.length > 0) {
+                const feature = data.features[0];
+                const props = data.features[0].properties;
+                const content = Object.keys(props).map(key => `<strong>${key}</strong>: ${props[key]}`).join('<br>');
+
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(content)
+                    .addTo(map);
+            } else {
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML("Không có dữ liệu dân số tại điểm này.")
+                    .addTo(map);
+            }
+        })
+        .catch(err => console.error('Error fetching feature info:', err));
+});
+
 
 $('#data-info-table__close-btn').on('click', function () {
     $('.data-info-table').addClass('d-none');
