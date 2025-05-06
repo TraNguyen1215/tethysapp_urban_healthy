@@ -306,7 +306,7 @@
     </div>
     <div class="offcanvas-footer" style="text-align: center;">
         <!-- <img src="{% static 'data_visualization/images/logo.png' %}" width="32" height="32" /> -->
-        <p style="font-size: 12px; margin-top: 4px;">© Copyright 2024 MKDC ICT</p>
+        <p style="font-size: 12px; margin-top: 4px;">© Copyright 2025 WEBGIS Y tế đô thị</p>
     </div>
 </div>
 
@@ -472,10 +472,14 @@
         const layers = [
             { switchId: "switch-population", layerId: "population" },
             { switchId: "switch-road-layer", layerId: "road-layer" },
-            { switchId: "switch-01", layerId: "hospitals"},
-            { switchId: "switch-02", layerId: "clinics-doctors" },
-            { switchId: "switch-04", layerId: "pharmacies" },
-            { switchId: "switch-03", layerId: "dentists" },
+            { switchId: "switch-01", layerId: "hospital-points"},
+            { switchId: "switch-01", layerId: "hospital-polygons"},
+            { switchId: "switch-02", layerId: "clinics-doctors-points"},
+            { switchId: "switch-02", layerId: "clinics-doctors-polygons"},
+            { switchId: "switch-03", layerId: "dentists-points"},
+            { switchId: "switch-03", layerId: "dentists-polygons"},
+            { switchId: "switch-04", layerId: "pharmacies-points"},
+            { switchId: "switch-04", layerId: "pharmacies-polygons"},
         ];
 
         layers.forEach(function(layer) {

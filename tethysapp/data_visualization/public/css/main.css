@@ -30,7 +30,7 @@ body>div:first-child {
 
 .header-bar {
     display: flex;
-    background-color: #006400;
+    background-color: #172852;
     height: 60px;
     align-items: center;
     padding: 0 16px;
@@ -131,13 +131,13 @@ body>div:first-child {
 }
 
 #button-support .container {
-    padding: 20px 5px;
+    /* padding: 20px 5px; */
     color: black;
     text-align: center;
 }
 
 #button-support .modal-dialog {
-    max-width: 800px;
+    max-width: 700px;
     width: 100%;
 }
 
@@ -157,7 +157,7 @@ body>div:first-child {
 }
 
 #button-support .modal-body {
-    padding: 10px 20px;
+    /* padding: 10px 20px; */
     color: #555;
 }
 
@@ -172,7 +172,7 @@ body>div:first-child {
 }
 
 .close-offcanvas-layer-btn {
-    background-color: #006400;
+    background-color: #172852;
     border-radius: 0;
     font-size: 12px;
     color: #fff;
@@ -199,18 +199,18 @@ footer p {
 }
 
 footer a {
-    color: #28a745; /* Xanh lá */
+    color: #0c1b41;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
 
 footer a:hover {
-    color: #218838; /* Xanh lá đậm hơn khi hover */
+    color: #172852;
 }
 .contact-info {
     display: flex;
     font-family: Arial, sans-serif;
-    color: #006400;
+    color: #2d3f6b;
     line-height: 1.8;
     justify-content: center;
     margin: 30px 10px 20px;
@@ -225,12 +225,12 @@ footer a:hover {
 
 .contact-item i {
     font-size: 1.2rem;
-    color: #006400; /* Màu biểu tượng */
+    color: #172852; /* Màu biểu tượng */
     margin-right: 10px;
 }
 
 .contact-item span {
     font-size: 16px;
-    color: #006400; /* Màu văn bản */
+    color: #172852; /* Màu văn bản */
     font-weight: 500;
 }
