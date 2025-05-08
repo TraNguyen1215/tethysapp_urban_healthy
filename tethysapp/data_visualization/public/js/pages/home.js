@@ -454,3 +454,73 @@ $('#data-info-table__close-btn').on('click', function () {
 $('#data-info-table-population__close-btn').on('click', function () {
     $('#data-info-table-population').addClass('d-none');
 });
+
+$.ajax({
+    url: `/apps/data-visualization/api/facilities`,
+    method: 'GET',
+    success: function (data) {
+        updateFacilityDropdown(data.data.data);
+        console.log(data);
+    },
+    error: function () {
+        $('#search-keyword').html('<option>-- Không thể tải dữ liệu --</option>');
+    }
+});
+
+$('#type-checkboxes input[type="checkbox"]').on('change', function () {
+    $('#search-keyword').html('<option>-- Đang tải tên cơ sở... --</option>');
+
+    let selectedTypes = [];
+    $('#type-checkboxes input[type="checkbox"]:checked').each(function () {
+        selectedTypes.push($(this).val());
+    });
+
+    $('#search-keyword').empty().append('<option>-- Đang tải dữ liệu... --</option>');
+
+    let allFacilities = [];
+
+    if (selectedTypes.length >0 ) {
+        let pending = selectedTypes.length;
+
+        console.log(selectedTypes);
+
+        selectedTypes.forEach(function (type) {
+            $.ajax({
+                url: `/apps/data-visualization/api/facilities/${type}`,
+                method: 'GET',
+                data: { type: type },
+                success: function (data) {
+                    allFacilities = allFacilities.concat(data.data.data);
+
+                },
+                complete: function () {
+                    pending--;
+                    if (pending === 0) {
+                        updateFacilityDropdown(allFacilities);
+                    }
+                },
+                error: function () {
+                    pending--;
+                    if (pending === 0) {
+                        updateFacilityDropdown(allFacilities);
+                    }
+                }
+            });
+        });
+    }
+});
+
+function updateFacilityDropdown(data) {
+    $('#search-keyword').empty().append('<option value="">-- Chọn tên cơ sở --</option>');
+    if (data && data.length > 0) {
+        data.forEach(function (item) {
+            $('#search-keyword').append(
+                $('<option>', {
+                    text: item.name || '[Không tên]'
+                })
+            );
+        });
+    } else {
+        $('#search-keyword').append('<option value="">-- Không có cơ sở nào --</option>');
+    }
+}

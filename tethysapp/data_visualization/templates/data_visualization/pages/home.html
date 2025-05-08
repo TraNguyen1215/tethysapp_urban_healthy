@@ -79,12 +79,9 @@
         </div>
         <div class="collapse multi-collapse" id="search-collapse">
             <form id="search-form" class="p-3">
+                <!-- CHỌN LOẠI CƠ SỞ ĐƯA LÊN TRÊN -->
                 <div class="mb-3">
-                    <label for="search-keyword" class="form-label">Từ khóa</label>
-                    <input type="text" class="form-control" id="search-keyword" placeholder="Nhập tên cơ sở...">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Loại cơ sở</label>
+                    <label class="form-label">Loại cơ sở y tế</label>
                     <div id="type-checkboxes">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="hospital" id="type-hospital">
@@ -92,25 +89,46 @@
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="clinic" id="type-clinic">
-                            <label class="form-check-label" for="type-clinic">Phòng khám</label>
+                            <label class="form-check-label" for="type-clinic">Trạm xá/Phòng khám</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="doctor" id="type-doctor">
+                            <label class="form-check-label" for="type-doctor">Phòng khám tư nhân</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="pharmacy" id="type-pharmacy">
                             <label class="form-check-label" for="type-pharmacy">Nhà thuốc</label>
                         </div>
-                        <!-- Thêm loại khác tùy vào dữ liệu -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="dentist" id="type-dentist">
+                            <label class="form-check-label" for="type-dentist">Nha khoa</label>
+                        </div> 
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="vacxin" id="type-population">
+                            <label class="form-check-label" for="type-population">Trung tâm tiêm chủng</label>
+                        </div>
                     </div>
                 </div>
-
+                <!-- TỪ KHÓA => SELECT -->
                 <div class="mb-3">
-                    <label for="search-location" class="form-label">Tọa độ hoặc địa chỉ</label>
+                    <label for="search-keyword" class="form-label">Tên cơ sở y tế</label>
+                    <select class="form-select" id="search-keyword">
+                        <option value="">-- Chọn tên cơ sở --</option>
+                        <!-- Thêm động qua JS -->
+                    </select>
+                </div>
+        
+                <!-- ĐỊA CHỈ HOẶC TỌA ĐỘ -->
+                <div class="mb-3">
+                    <label for="search-location" class="form-label">Vị trí của bạn</label>
                     <input type="text" class="form-control" id="search-location"
                         placeholder="Ví dụ: 10.762622, 106.660172 hoặc 'Bệnh viện Chợ Rẫy'">
                 </div>
-
+        
                 <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
             </form>
         </div>
+        
 
 
         <hr>

@@ -13,7 +13,8 @@ BACKEND_URL = os.getenv('BACKEND_URL')
 # lấy tất cả các cơ sở y tế
 @controller(url='/api/facilities')
 def get_news(request):
-    url = f"{BACKEND_URL}/api/data/facilities/"
+    url = f"{BACKEND_URL}/api/data/facilities"
+    print(url)
     response = requests.get(url)
     
     if response.status_code == 200:
@@ -30,7 +31,7 @@ def get_facility_detail(request):
     if not facility_id:
         return JsonResponse({"error": "facility_id is required"}, status=400)
     
-    url = f"{BACKEND_URL}/api/facility?id={facility_id}"
+    url = f"{BACKEND_URL}/api/data/facility?id={facility_id}"
 
     try:
         response = requests.get(url)
@@ -46,9 +47,9 @@ def get_facility_detail(request):
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
 
 # lấy cơ sở y tế theo loại
-@controller(url='/api/facilities/<facility_type>', methods=['GET'])
+@controller(url='/api/facilities/{facility_type}', methods=['GET'])
 def get_facilities_by_type(request, facility_type):
-    url = f"{BACKEND_URL}/api/data/facilities/{facility_type}/"
+    url = f"{BACKEND_URL}/api/data/facilities/{facility_type}"
     response = requests.get(url)
     
     try:
@@ -56,6 +57,7 @@ def get_facilities_by_type(request, facility_type):
             data = response.json()
         else:
             data = {"error": response.text}
+        return JsonResponse({'data': data})
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
     
@@ -67,7 +69,7 @@ def search_facilities(request):
     if not facility_name:
         return JsonResponse({"error": "facility_name is required"}, status=400)
     
-    url = f"{BACKEND_URL}/api/facilities/search?name={facility_name}"
+    url = f"{BACKEND_URL}/api/data/facilities/search?name={facility_name}"
 
     try:
         response = requests.get(url)
@@ -86,7 +88,8 @@ def search_facilities(request):
 @controller(url='/api/facilities/5_nearest', methods=['GET'])
 def get_nearest_facilities(request):
     address = request.GET.get('address')
-    url = f"{BACKEND_URL}/api/analysis/nearest_facilities?address={address}"
+    type = request.GET.get('type')
+    url = f"{BACKEND_URL}/api/analysis/nearest_facilities?address={address}&type={type}"
     
     response = requests.get(url)
     
