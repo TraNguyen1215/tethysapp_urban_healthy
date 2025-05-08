@@ -385,8 +385,8 @@ function showFeatureInfo(feature) {
         <tr><td>Liên lạc</td><td>${properties.phone || properties.mobile || properties["contact:phone"] || ''}</td></tr>
     `;
 
-    $('.data-info-table').removeClass('d-none');
-    $('.data-info-table .table tbody').html(tableContent);
+    $('#data-info-table').removeClass('d-none');
+    $('#data-info-table .table tbody').html(tableContent);
 }
 
 // Gắn sự kiện cho từng layer
@@ -421,10 +421,10 @@ map.on('click', function (e) {
     const url = `http://localhost:8080/geoserver/health_map/wms?` +
         `SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo` +
         `&FORMAT=image/png&TRANSPARENT=true` +
-        `&QUERY_LAYERS=population_2020` +
-        `&LAYERS=population_2020` +
+        `&QUERY_LAYERS=vn_dancu_2020_1km` +
+        `&LAYERS=vn_dancu_2020_1km` +
         `&INFO_FORMAT=application/json` +
-        `&SRS=EPSG:3857` +
+        `&SRS=EPSG:4326` +
         `&WIDTH=${width}&HEIGHT=${height}` +
         `&X=${x}&Y=${y}` +
         `&BBOX=${bbox.join(',')}`;
@@ -432,20 +432,16 @@ map.on('click', function (e) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             if (data.features && data.features.length > 0) {
-                const feature = data.features[0];
+                console.log(data);
                 const props = data.features[0].properties;
-                const content = Object.keys(props).map(key => `<strong>${key}</strong>: ${props[key]}`).join('<br>');
+                const tableContent = `
+                    <tr><td>Mật độ dân số 1km2</td><td>${props.GRAY_INDEX || 'Không có dữ liệu mật độ dân số'}</td></tr>
+                `;
 
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(content)
-                    .addTo(map);
-            } else {
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML("Không có dữ liệu dân số tại điểm này.")
-                    .addTo(map);
+                $('#data-info-table-population').removeClass('d-none');
+                $('#data-info-table-population .table tbody').html(tableContent);
             }
         })
         .catch(err => console.error('Error fetching feature info:', err));
@@ -453,5 +449,8 @@ map.on('click', function (e) {
 
 
 $('#data-info-table__close-btn').on('click', function () {
-    $('.data-info-table').addClass('d-none');
+    $('#data-info-table').addClass('d-none');
+});
+$('#data-info-table-population__close-btn').on('click', function () {
+    $('#data-info-table-population').addClass('d-none');
 });

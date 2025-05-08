@@ -8,131 +8,14 @@ from tethys_sdk.routing import controller
 
 load_dotenv()
 
-APIM_ADMIN_URL = os.getenv('APIM_ADMIN_URL')
-APIM_URL = os.getenv('APIM_URL')
-APIM_CLIENT_ID = os.getenv('APIM_CLIENT_ID')
-APIM_SECRET_KEY = os.getenv('APIM_SECRET_KEY')
+BACKEND_URL = os.getenv('BACKEND_URL')
 
-# Thời gian đệm trước khi token hết hạn (giây)
-BUFFER_TIME = 60
-
-def fetch_new_token():
-    """Lấy token mới từ API."""
-    url = f"{APIM_ADMIN_URL}/oauth2/token"
-    auth_str = f"{APIM_CLIENT_ID}:{APIM_SECRET_KEY}"
-    auth_base64 = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
-    headers = {
-        "Authorization": f"Basic {auth_base64}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {"grant_type": "client_credentials"}
-    response = requests.post(url, headers=headers, data=data)
-
-    if response.status_code == 200:
-        json_data = response.json()
-        return json_data.get('access_token', ''), json_data.get('expires_in', 0)
-    else:
-        print(f"Error {response.status_code}: {response.text}")
-        return None, 0
-
-def get_user_token(request):
-    """Kiểm tra token trong session của người dùng, và làm mới nếu cần."""
-    # Lấy token và thời gian hết hạn từ session
-    token = request.session.get('access_token')
-    expires_at = request.session.get('expires_at', 0)
-    current_time = int(time.time())
-
-    # Kiểm tra xem token có còn hạn không (kể cả BUFFER_TIME)
-    if token and current_time < (expires_at - BUFFER_TIME):
-        return token
-
-    # Nếu không hợp lệ hoặc hết hạn, lấy token mới
-    token, expires_in = fetch_new_token()
-    if token:
-        request.session['access_token'] = token
-        request.session['expires_at'] = current_time + expires_in
-    return token
-
-@controller(url='/api/monitoring-well/{well_code}/water-level')
-def get_water_level(request, well_code):
-    # token = get_user_token(request)
-    token = fetch_new_token()[0]
-
-    # Lấy tham số start và end từ request
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-
-    # url = f"{APIM_URL}/monitoring-data/water-level/v1/{well_code}?start={start}&end={end}"
-    url = f"{APIM_URL}/nawapi/v1/api/monitoring-data/water-level/{well_code}?start={start}&end={end}"
-
-    print(url)
-    headers = {"Authorization": f"Bearer {token}"}
-
-    # Gửi yêu cầu GET
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-        data = {"error": response.text}
-
-    return JsonResponse({'data': data})
-
-@controller(url='/api/monitoring-well/{well_code}/water-temperature')
-def get_temperature_level(request, well_code):
-    # token = get_user_token(request)
-    token = fetch_new_token()[0]
-    
-    # Lấy tham số start và end từ request
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-    
-    # url = f"{APIM_URL}/monitoring-data/water-temperature/v1/{well_code}?start={start}&end={end}"
-    url = f"{APIM_URL}/nawapi/v1/api/monitoring-data/water-temperature/{well_code}?start={start}&end={end}"
-    headers = {"Authorization": f"Bearer {token}"}
-    
-    # Gửi yêu cầu GET
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-        data = {"error": response.text}
-
-    return JsonResponse({'data': data})
-
-@controller(url='/api/monitoring-well/{well_code}/water-chemistry')
-def get_water_chemistry(request, well_code):
-    # token = get_user_token(request)
-    token = fetch_new_token()[0]
-    
-    # Lấy tham số start và end từ request
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-    
-    # url = f"{APIM_URL}/monitoring-data/water-chemistry/v1/{well_code}?start={start}&end={end}"
-    url = f"{APIM_URL}/nawapi/v1/api/monitoring-data/water-chemistry/{well_code}?start={start}&end={end}"
-    headers = {"Authorization": f"Bearer {token}"}
-    
-    # Gửi yêu cầu GET
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-        data = {"error": response.text}
-
-    return JsonResponse({'data': data})
-
-@controller(url='/api/news')
+# lấy tất cả các cơ sở y tế
+@controller(url='/api/facilities')
 def get_news(request):
-    token = get_user_token(request)
-    url = f"{APIM_URL}/nawapi/v1/api/news/"
-    headers = {"Authorization": f"Bearer {token}"}
-    print(url)
-    response = requests.get(url, headers=headers)
-
-
+    url = f"{BACKEND_URL}/api/data/facilities/"
+    response = requests.get(url)
+    
     if response.status_code == 200:
         data = response.json()
     else:
@@ -140,22 +23,106 @@ def get_news(request):
 
     return JsonResponse({'data': data})
 
-@controller(url='/api/news/{new_id}')
-def get_news_detail(request, new_id):
-    token = get_user_token(request)
-    url = f"{APIM_URL}/nawapi/v1/api/news/{new_id}/"
-    print(url)
+@controller(url='/api/facility')
+def get_facility_detail(request):
+    facility_id = request.GET.get('facility_id')
+    
+    if not facility_id:
+        return JsonResponse({"error": "facility_id is required"}, status=400)
+    
+    url = f"{BACKEND_URL}/api/facility?id={facility_id}"
 
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url)
 
-    if response.status_code == 200:
-        if response.headers.get('Content-Type') == 'application/pdf':
-            return HttpResponse(response.content, content_type='application/pdf')
+        if response.status_code == 200:
+            data = response.json()
         else:
-            return JsonResponse({'error': 'Not a PDF file'}, status=400)
-    else:
-        return JsonResponse({'error': response.text}, status=response.status_code)
+            data = {"error": response.text}
+
+        return JsonResponse({'data': data})
+    
+    except Exception as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+
+# lấy cơ sở y tế theo loại
+@controller(url='/api/facilities/<facility_type>', methods=['GET'])
+def get_facilities_by_type(request, facility_type):
+    url = f"{BACKEND_URL}/api/data/facilities/{facility_type}/"
+    response = requests.get(url)
+    
+    try:
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            data = {"error": response.text}
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+    
+# lấy cơ sở y tế theo tên
+@controller(url='/api/facilities/search', methods=['GET'])
+def search_facilities(request):
+    facility_name = request.GET.get('facility_name')
+    
+    if not facility_name:
+        return JsonResponse({"error": "facility_name is required"}, status=400)
+    
+    url = f"{BACKEND_URL}/api/facilities/search?name={facility_name}"
+
+    try:
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            data = {"error": response.text}
+
+        return JsonResponse({'data': data})
+    
+    except Exception as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+
+# 5 cơ sở y tế gần nhất
+@controller(url='/api/facilities/5_nearest', methods=['GET'])
+def get_nearest_facilities(request):
+    address = request.GET.get('address')
+    url = f"{BACKEND_URL}/api/analysis/nearest_facilities?address={address}"
+    
+    response = requests.get(url)
+    
+    try:
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            data = {"error": response.text}
+        
+        return JsonResponse({'data': data})
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+
+# đường đi ngắn nhất đến cơ sở y tế cho trước
+@controller(url='/api/facility/shortest_path', methods=['GET'])
+def get_shortest_path(request):
+    name = request.GET.get('name')
+    address = request.GET.get('address')
+    
+    if not name or not address:
+        return JsonResponse({"error": "name and address is required"}, status=400)
+    
+    url = f"{BACKEND_URL}/api/analysis/shortest_path?name={name}&address={address}"
+
+    try:
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            data = {"error": response.text}
+
+        return JsonResponse({'data': data})
+    
+    except Exception as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
 
 @controller(url='/map/wms')
 def get_wms_map(request):
@@ -173,12 +140,10 @@ def get_wms_map(request):
         'layers': request.GET.get('layers', 'qp3_DB_MucNuoc_T10'),
     }
 
-    wms_url = f"{APIM_URL}/geoserver/v1/nawapi/wms"
-    token = get_user_token(request)
-    headers = {"Authorization": f"Bearer {token}"}
+    wms_url = f"{BACKEND_URL}/geoserver/health_map/wms"
 
     try:
-        response = requests.get(wms_url, params=params, headers=headers)
+        response = requests.get(wms_url, params=params)
         return HttpResponse(response.content, content_type="image/png")
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"Error: {str(e)}", status=500)
@@ -194,25 +159,10 @@ def get_wfs_map(request):
         'typeName': request.GET.get('typeName', 'nawapi:monitoring_well'),
     }
 
-    wfs_url = f"{APIM_URL}/geoserver/v1/nawapi/wfs"
-    token = get_user_token(request)
-    headers = {"Authorization": f"Bearer {token}"}
+    wfs_url = f"{BACKEND_URL}/geoserver/health_map/wfs"
 
     try:
-        response = requests.get(wfs_url, params=params, headers=headers)
+        response = requests.get(wfs_url, params=params)
         return HttpResponse(response.content, content_type="application/json")
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Error: {str(e)}", status=500)
-    
-@controller(url='/api/menu/group')
-def get_layer(request):
-    try:
-        token = get_user_token(request)
-        url = f"{APIM_URL}/nawapi/v1/api/menu/group/"
-        headers = {"Authorization": f"Bearer {token}"}
-        layer_response = requests.get(url, headers=headers)
-        layers_data = layer_response.json()
-        
-        return JsonResponse({"data": layers_data})
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"Error: {str(e)}", status=500)

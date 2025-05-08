@@ -9,16 +9,34 @@
     </svg>
 </button>
 
-<!-- Box hiển thị thông tin điểm quan trắc -->
-<div class="data-info-table d-none">
+<!-- Box hiển thị thông tin cơ sở y tế -->
+<div class="data-info-table d-none" id="data-info-table">
     <div class="data-info-table__nav">
-        <p id="data-info-table__title">Thông tin Trạm quan trắc</p>
+        <p id="data-info-table__title">Thông tin cơ sở y tế</p>
         <button id="data-info-table__close-btn" type="button" class="btn close-offcanvas-layer-btn">
             <span>Đóng</span>
         </button>
     </div>
 
     <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td>Key</td>
+                <td>Value</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="data-info-table d-none" id="data-info-table-population">
+    <div class="data-info-table__nav">
+        <p id="data-info-table__title">Thông tin mật độ dân số</p>
+        <button id="data-info-table-population__close-btn" type="button" class="btn close-offcanvas-layer-btn">
+            <span>Đóng</span>
+        </button>
+    </div>
+
+    <table class="table table-bordered table-striped" id="data-info-table-population__table">
         <tbody>
             <tr>
                 <td>Key</td>
@@ -97,7 +115,7 @@
 
         <hr>
         <!-- Lớp mạng lưới cơ sở y tế -->
-        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#network-layer-collapse" aria-expanded="false" aria-controls="network-layer-collapse">
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#health-layer-collapse" aria-expanded="false" aria-controls="health-layer-collapse">
             <div class="d-flex" style="align-items: center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
                     <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
@@ -105,7 +123,7 @@
                 </svg>
                 <h6 style="margin-left: 8px;">Mạng lưới cơ sở y tế</h6>
             </div>
-            <span class="icon" id="network-layer-toggle-icon">
+            <span class="icon" id="health-layer-toggle-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
                     viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
@@ -113,8 +131,8 @@
                 </svg>
             </span>
         </div>
-        <div class="collapse multi-collapse" id="network-layer-collapse">
-            <div class="network-layers layer-items">
+        <div class="collapse multi-collapse" id="health-layer-collapse">
+            <div class="health-layers layer-items">
                 <div class="layer-item">
                     <div class="form-check form-switch" style="margin-bottom: 10px;">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-01" />
@@ -123,7 +141,7 @@
                     
                 </div>
             </div>
-            <div class="network-layers layer-items">
+            <div class="health-layers layer-items">
                 <div class="layer-item">
                     <div class="form-check form-switch" style="margin-bottom: 10px;">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-02" />
@@ -132,7 +150,7 @@
             
                 </div>
             </div>
-            <div class="network-layers layer-items">
+            <div class="health-layers layer-items">
                 <div class="layer-item">
                     <div class="form-check form-switch" style="margin-bottom: 10px;">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-03" />
@@ -141,7 +159,7 @@
             
                 </div>
             </div>
-            <div class="network-layers layer-items">
+            <div class="health-layers layer-items">
                 <div class="layer-item">
                     <div class="form-check form-switch" style="margin-bottom: 10px;">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-04" />
@@ -153,9 +171,9 @@
             
         </div>
         <hr>
-        <!-- Chuyên đề dự báo cảnh báo -->
-        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#forecast-layer-collapse" aria-expanded="false"
-            aria-controls="forecast-layer-collapse">
+        <!-- Mật độ dân số -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#population-layer-collapse" aria-expanded="false"
+            aria-controls="population-layer-collapse">
             <div class="d-flex" style="align-items: center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
                     <path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
@@ -163,7 +181,7 @@
                 </svg>
                 <h6 style="margin-left: 8px;">Mật độ dân số 1km năm 2020 </h6>
             </div>
-            <span class="icon" id="forecast-layer-toggle-icon">
+            <span class="icon" id="population-layer-toggle-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
                     viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
@@ -171,8 +189,8 @@
                 </svg>
             </span>
         </div>
-        <div class="collapse multi-collapse" id="forecast-layer-collapse">
-            <div class="forecast-layers layer-items" style="padding-right:0px ;">
+        <div class="collapse multi-collapse" id="population-layer-collapse">
+            <div class="population-layers layer-items" style="padding-right:0px ;">
                 <div class="layer-item form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="switch-population" />
                     <label class="form-check-label" for="switch-population">Mật độ dân số</label>
@@ -228,60 +246,96 @@
 
 <div class="legend-box">
     <div class="legend-scrollable">
-            <!-- Mực nước T10 - tầng q3-->
-            <div class="" id="water-4">
-                <p class="mt-2 fw-bold text-primary">Mật độ dân số 2020 (người/km²)</p>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #ffffcc;"></div>
-                    <span class="legend-text">0 - 10</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #e0f3db;"></div>
-                    <span class="legend-text">10 - 50</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #ccebc5;"></div>
-                    <span class="legend-text">50 - 100</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #a8ddb5;"></div>
-                    <span class="legend-text">100 - 500</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #7bccc4;"></div>
-                    <span class="legend-text">500 - 1000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #4eb3d3;"></div>
-                    <span class="legend-text">1000 - 5000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #2b8cbe;"></div>
-                    <span class="legend-text">5000 - 10000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #0868ac;"></div>
-                    <span class="legend-text">10000 - 20000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #084081;"></div>
-                    <span class="legend-text">20000 - 50000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #081d58;"></div>
-                    <span class="legend-text">50000 - 100000</span>
-                </div>
-                <div class="layer-legend__item">
-                    <div class="tag-square" style="background-color: #041b4d;"></div>
-                    <span class="legend-text">> 100000</span>
-                </div>
+        <div class="layer-legend d-none" id="hospital-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Bệnh viện</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #d73027;"></div>
+                <span class="legend-text">Điểm</span>
             </div>
-        <!-- <div class="layer-legend__item" id="item_13">
-            <div class="image-container">
-                <img src="https://gis.mkdc.com.vn/geoserver/data_visualization/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=data_visualization:qp3_MucNuoc_T9vsT8&legend_options=fontName:Times%20New%20Roman;fontAntiAliasing:true;fontColor:0x000033;fontSize:12"
-                    alt="Legend Graphic" class="bottom-only">
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #d73027;"></div>
+                <span class="legend-text">Vùng</span>
             </div>
-        </div> -->
+        </div>
+        <div class="layer-legend d-none" id="clinics-doctors-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Trạm y tế/Phòng khám</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #FFCC00;"></div>
+                <span class="legend-text">Điểm</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #FFCC00;"></div>
+                <span class="legend-text">Vùng</span>
+            </div>
+        </div>
+        <div class="layer-legend d-none" id="dentists-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Nha khoa</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #91bfdb;"></div>
+                <span class="legend-text">Điểm</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #91bfdb;"></div>
+                <span class="legend-text">Vùng</span>
+            </div>
+        </div>
+        <div class="layer-legend d-none" id="pharmacies-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Nhà thuốc</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-circle" style="background-color: #1a9850;"></div>
+                <span class="legend-text">Điểm</span>
+            </div><div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #1a9850;"></div>
+                <span class="legend-text">Vùng</span>
+            </div>
+        </div>
+        <div class="d-none" id="population-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Mật độ dân số 2020 (người/km²)</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #ffffcc;"></div>
+                <span class="legend-text">0 - 10</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #e0f3db;"></div>
+                <span class="legend-text">10 - 50</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #ccebc5;"></div>
+                <span class="legend-text">50 - 100</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #a8ddb5;"></div>
+                <span class="legend-text">100 - 500</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #7bccc4;"></div>
+                <span class="legend-text">500 - 1000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #4eb3d3;"></div>
+                <span class="legend-text">1000 - 5000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #2b8cbe;"></div>
+                <span class="legend-text">5000 - 10000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #0868ac;"></div>
+                <span class="legend-text">10000 - 20000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #084081;"></div>
+                <span class="legend-text">20000 - 50000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #081d58;"></div>
+                <span class="legend-text">50000 - 100000</span>
+            </div>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #041b4d;"></div>
+                <span class="legend-text">> 100000</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -346,53 +400,27 @@
 
         // Thiết lập cho các layer khác nhau
         setupCollapseToggle("#bg-layer-collapse", "#bg-layer-toggle-icon");
-        setupCollapseToggle("#thematic-layer-collapse", "#thematic-layer-toggle-icon");
-        setupCollapseToggle("#network-layer-collapse", "#network-layer-toggle-icon");
-        setupCollapseToggle("#water-level-collapse", "#water-level-toggle-icon");
+        setupCollapseToggle("#health-layer-collapse", "#health-layer-toggle-icon");
         setupCollapseToggle("#search-collapse", "#search-toggle-icon");
-
-        function setupCollapseToggle(collapseId, toggleIconId, useStopPropagation = false) {
-            // Lắng nghe sự kiện mở - đóng collapse
-            $(collapseId).on("show.bs.collapse", function (e) {
-                if (useStopPropagation) e.stopPropagation(); // Ngăn chặn ảnh hưởng đến các phần tử cha.
-                $(toggleIconId).html(svg_chevron_up);
-            }).on("hide.bs.collapse", function (e) {
-                if (useStopPropagation) e.stopPropagation(); // Ngăn chặn ảnh hưởng đến các phần tử cha.
-                $(toggleIconId).html(svg_chevron_down);
-            });
-        }
-
-        // Thiết lập cho các layer khác nhau
-        setupCollapseToggle("#forecast-layer-collapse", "#forecast-layer-toggle-icon");
-        setupCollapseToggle("#water-8-collapse", "#water-8-toggle-icon", true);
-        setupCollapseToggle("#water-9-collapse", "#water-9-toggle-icon", true);
-        setupCollapseToggle("#water-10-collapse", "#water-10-toggle-icon", true);
-
+        setupCollapseToggle("#population-layer-collapse", "#population-layer-toggle-icon");
 
         // Hiển thị legend-2 và layer tương ứng
         function toggleLayer(switchId, layerId) {
-        const isChecked = document.querySelector(`#${switchId}`).checked;
-        
-        map.setLayoutProperty(layerId, "visibility", isChecked ? "visible" : "none");
+            const isChecked = document.querySelector(`#${switchId}`).checked;
 
-        const anyChecked = layers.some(layer => document.querySelector(`#${layer.switchId}`).checked);
-
-        const legend = document.querySelector("#legend-04");
-
-        // Hiển thị hoặc ẩn legend dựa trên trạng thái của các lớp
-        if (anyChecked) {
-            $(legend).removeClass("d-none");
-            if (switchId === 'switch-population') {
-                if (isChecked) {
-                    $("#water-1").removeClass("d-none");
-                } else {
-                    $("#water-1").addClass("d-none");
-                }
+            map.setLayoutProperty(layerId, "visibility", isChecked ? "visible" : "none");
+            layerId = layerId.split("-")[0];
+            if (layerId == "clinics") {
+                layerId = "clinics-doctors";
             }
-        } else {
-            // Ẩn toàn bộ legend nếu không có lớp nào được bật
-            $(legend).addClass("d-none");
-        }
+
+            const legendElement = document.querySelector(`#${layerId}-legend`);
+
+            if (isChecked) {
+                legendElement.classList.remove("d-none");
+            } else {
+                legendElement.classList.add("d-none");
+            }
         }
 
         // Gán sự kiện click cho tất cả các switch
