@@ -221,48 +221,6 @@ var map = new maplibregl.Map({
                     'visibility': 'none'
                 }
             },
-            // {
-            //     id: 'clinics-doctors',
-            //     type: 'circle',
-            //     source: 'clinic-doctor-source',
-            //     paint: {
-            //         'circle-radius': 7,
-            //         'circle-color': '#fc8d59',
-            //         'circle-stroke-width': 1,
-            //         'circle-stroke-color': '#ccc'
-            //     },
-            //     layout: {
-            //         'visibility': 'none'
-            //     }
-            // },
-            // {
-            //     id: 'pharmacies',
-            //     type: 'circle',
-            //     source: 'pharmacy-source',
-            //     paint: {
-            //         'circle-radius': 7,
-            //         'circle-color': '#1a9850',
-            //         'circle-stroke-width': 1,
-            //         'circle-stroke-color': '#ccc'
-            //     },
-            //     layout: {
-            //         'visibility': 'none'
-            //     }
-            // },
-            // {
-            //     id: 'dentists',
-            //     type: 'circle',
-            //     source: 'dentist-source',
-            //     paint: {
-            //         'circle-radius': 7,
-            //         'circle-color': '#91bfdb',
-            //         'circle-stroke-width': 1,
-            //         'circle-stroke-color': '#ccc'
-            //     },
-            //     layout: {
-            //         'visibility': 'none'
-            //     }
-            // },
             {
                 'id': 'population',
                 'type': 'raster',
@@ -274,17 +232,6 @@ var map = new maplibregl.Map({
                     'visibility': 'none'
                 }
             },
-            // {
-            //     'id': 'road-layer',
-            //     'type': 'raster',
-            //     'source': 'road-layer-source',
-            //     'paint': {
-            //         'raster-opacity': 0.8
-            //     },
-            //     layout: {
-            //         'visibility': 'none'
-            //     }
-            // }
         ],
     },
     center: [105.854444, 21.028511],
@@ -460,6 +407,7 @@ $('#data-info-table-population__close-btn').on('click', function () {
     $('#data-info-table-population').addClass('d-none');
 });
 
+// Tải danh sách cơ sở y tế
 $.ajax({
     url: `/apps/data-visualization/api/facilities`,
     method: 'GET',
@@ -527,7 +475,7 @@ $('#type-checkboxes input[type="checkbox"]').on('change', function () {
         });
     }
 });
-
+// Cập nhật dropdown với danh sách cơ sở y tế
 function updateFacilityDropdown(data) {
     $('#search-keyword').empty().append('<option value="">-- Chọn tên cơ sở --</option>');
     if (data && data.length > 0) {
@@ -542,6 +490,77 @@ function updateFacilityDropdown(data) {
         $('#search-keyword').append('<option value="">-- Không có cơ sở nào --</option>');
     }
 }
+
+// Tìm kiếm địa chỉ
+const API_KEY = 'JgkWvFIk4UTLFsY8PmCW2hlm3puo3WRhsqYspuJX';
+let debounceTimer;
+let marker;
+$('#search-location').on('input', function () {
+    const query = $(this).val().trim();
+    clearTimeout(debounceTimer);
+
+    if (!query) {
+        $('#suggestions').empty();
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        $.get('https://rsapi.goong.io/Place/AutoComplete', {
+            input: query,
+            api_key: API_KEY
+        }, function (data) {
+            $('#suggestions').empty();
+            if (data.predictions) {
+                data.predictions.forEach(item => {
+                    $('#suggestions').append(`
+                                <li class="list-group-item list-group-item-action" data-id="${item.place_id}">
+                                    ${item.description}
+                                </li>
+                            `);
+                });
+            }
+        });
+    }, 300);
+});
+
+// Khi người dùng chọn gợi ý
+$(document).on('click', '#suggestions li', function () {
+    const selectedText = $(this).text().trim();
+    $('#search-location').val(selectedText);
+    $('#suggestions').empty();
+
+    // Nếu bạn muốn lấy tọa độ từ place_id:
+    const placeId = $(this).data('id');
+    $.get('https://rsapi.goong.io/Place/Detail', {
+        place_id: placeId,
+        api_key: API_KEY
+    }, function (detail) {
+        const location = detail.result.geometry.location;
+        console.log('Tọa độ:', location.lat, location.lng);
+        map.flyTo({
+            center: [location.lng, location.lat],
+            zoom: 15
+        });
+        if (marker) {
+            marker.remove();
+        }
+        marker = new maplibregl.Marker()
+            .setLngLat([location.lng, location.lat])
+            .setPopup(new maplibregl.Popup().setText(selectedText))
+            .addTo(map);
+
+        marker.togglePopup();
+    });
+});
+
+// Ẩn gợi ý khi click ra ngoài
+$(document).on('click', function (e) {
+    if (!$(e.target).closest('#search-location').length) {
+        $('#suggestions').empty();
+    }
+});
+
+// Khi người dùng chọn tên cơ sở
 $(function () {
     $('#search-form').on('submit', function (e) {
         e.preventDefault();
@@ -620,82 +639,10 @@ $(function () {
             method: 'GET',
             success: function (res) {
                 console.log('Đường đi ngắn nhất:', res);
-                // TODO: vẽ res.path.geometry lên bản đồ
             },
             error: function () {
                 alert('Không thể tính đường đi.');
             }
         });
     });
-});
-
-const API_KEY = 'JgkWvFIk4UTLFsY8PmCW2hlm3puo3WRhsqYspuJX';
-let debounceTimer;
-let marker;
-
-$('#search-location').on('input', function () {
-    const query = $(this).val().trim();
-    clearTimeout(debounceTimer);
-
-    if (!query) {
-        $('#suggestions').empty();
-        return;
-    }
-
-    debounceTimer = setTimeout(() => {
-        $.get('https://rsapi.goong.io/Place/AutoComplete', {
-            input: query,
-            api_key: API_KEY
-        }, function (data) {
-            $('#suggestions').empty();
-            if (data.predictions) {
-                data.predictions.forEach(item => {
-                    $('#suggestions').append(`
-                                <li class="list-group-item list-group-item-action" data-id="${item.place_id}">
-                                    ${item.description}
-                                </li>
-                            `);
-                });
-            }
-        });
-    }, 300);
-});
-
-// Khi người dùng chọn gợi ý
-$(document).on('click', '#suggestions li', function () {
-    const selectedText = $(this).text();
-    $('#search-location').val(selectedText);
-    $('#suggestions').empty();
-
-    // Nếu bạn muốn lấy tọa độ từ place_id:
-    const placeId = $(this).data('id');
-    $.get('https://rsapi.goong.io/Place/Detail', {
-        place_id: placeId,
-        api_key: API_KEY
-    }, function (detail) {
-        const location = detail.result.geometry.location;
-        console.log('Tọa độ:', location.lat, location.lng);
-        // Bạn có thể xử lý tiếp tại đây, ví dụ: hiển thị trên bản đồ
-        map.flyTo({
-            center: [location.lng, location.lat],
-            zoom: 15
-        });
-        if (marker) {
-            marker.remove();
-        } else {
-            marker = new maplibregl.Marker()
-                .setLngLat([location.lng, location.lat])
-                .setPopup(new maplibregl.Popup().setText(detail.result.name||selectedText))
-                .addTo(map);
-
-            marker.togglePopup();
-        }
-    });
-});
-
-// Ẩn gợi ý khi click ra ngoài
-$(document).on('click', function (e) {
-    if (!$(e.target).closest('#search-location').length) {
-        $('#suggestions').empty();
-    }
 });
