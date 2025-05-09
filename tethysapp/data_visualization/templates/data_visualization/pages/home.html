@@ -118,15 +118,18 @@
                     </select>
                 </div>
         
-                <!-- ĐỊA CHỈ HOẶC TỌA ĐỘ -->
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label for="search-location" class="form-label">Vị trí của bạn</label>
                     <input type="text" class="form-control" id="search-location"
-                        placeholder="Ví dụ: 10.762622, 106.660172 hoặc 'Bệnh viện Chợ Rẫy'">
+                        placeholder="Nhập địa chỉ" autocomplete="off">
+                    <ul id="suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
                 </div>
+                
         
                 <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
             </form>
+
+            <div id="nearest-results" class="p-3"></div>
         </div>
         
 
@@ -481,6 +484,22 @@
 
             const keyword = document.querySelector('#search-keyword').value.toLowerCase();
             const type = document.querySelector('#search-type').value;
+            // việt hóa
+            const typeMap = {
+                'bệnh viện': 'hospital',
+                'trạm y tế/Phòng khám': 'clinic',
+                'phòng khám tư nhân': 'doctor',
+                'nhà thuốc': 'pharmacy',
+                'nha khoa': 'dentist',
+                'trung tâm tiêm chủng': 'vacxin'
+            };
+            
+            type.forEach((item) => {
+                if (typeMap[item]) {
+                    type.push(typeMap[item]);
+                }
+            });
+
             const locationInput = document.querySelector('#search-location').value.trim();
 
             const filters = ['all'];
@@ -514,6 +533,7 @@
                 }
             }
         });
+        
 </script>
 
 <script src="{% static 'data_visualization/js/pages/home.js' %}"></script>

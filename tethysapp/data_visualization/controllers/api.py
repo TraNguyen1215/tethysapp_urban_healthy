@@ -9,6 +9,7 @@ from tethys_sdk.routing import controller
 load_dotenv()
 
 BACKEND_URL = os.getenv('BACKEND_URL')
+print(f"BACKEND_URL: {BACKEND_URL}")
 
 # lấy tất cả các cơ sở y tế
 @controller(url='/api/facilities')
@@ -62,9 +63,9 @@ def get_facilities_by_type(request, facility_type):
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
     
 # lấy cơ sở y tế theo tên
-@controller(url='/api/facilities/search', methods=['GET'])
+@controller(url='/api/facility/search', methods=['GET'])
 def search_facilities(request):
-    facility_name = request.GET.get('facility_name')
+    facility_name = request.GET.get('name')
     
     if not facility_name:
         return JsonResponse({"error": "facility_name is required"}, status=400)
@@ -85,12 +86,12 @@ def search_facilities(request):
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
 
 # 5 cơ sở y tế gần nhất
-@controller(url='/api/facilities/5_nearest', methods=['GET'])
-def get_nearest_facilities(request):
+@controller(url='/api/facility/nearest', methods=['GET'])
+def get_nearest_5_facilities(request):
     address = request.GET.get('address')
-    type = request.GET.get('type')
-    url = f"{BACKEND_URL}/api/analysis/nearest_facilities?address={address}&type={type}"
-    
+    f_type = request.GET.get('type')
+    url = f"http://127.0.0.1:5000/api/analysis/nearest_facilities?address={address}&type={f_type}"
+    print(url)
     response = requests.get(url)
     
     try:
