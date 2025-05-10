@@ -78,8 +78,9 @@
             </span>
         </div>
         <div class="collapse multi-collapse" id="search-collapse">
-            <form id="search-form" class="p-3">
-                <!-- CHỌN LOẠI CƠ SỞ ĐƯA LÊN TRÊN -->
+            <div class="p-3">
+        
+                <!-- CHỌN LOẠI CƠ SỞ -->
                 <div class="mb-3">
                     <label class="form-label">Loại cơ sở y tế</label>
                     <div id="type-checkboxes">
@@ -102,38 +103,40 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="dentist" id="type-dentist">
                             <label class="form-check-label" for="type-dentist">Nha khoa</label>
-                        </div> 
+                        </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="vacxin" id="type-population">
                             <label class="form-check-label" for="type-population">Trung tâm tiêm chủng</label>
                         </div>
                     </div>
                 </div>
-                <!-- TỪ KHÓA => SELECT -->
+        
+                <!-- TỪ KHÓA CƠ SỞ Y TẾ -->
                 <div class="mb-3">
                     <label for="search-keyword" class="form-label">Tên cơ sở y tế</label>
                     <select class="form-select" id="search-keyword">
                         <option value="">-- Chọn tên cơ sở --</option>
-                        <!-- Thêm động qua JS -->
+                        <!-- JS sẽ thêm động -->
                     </select>
                 </div>
         
+                <!-- VỊ TRÍ -->
                 <div class="mb-3 position-relative">
                     <label for="search-location" class="form-label">Vị trí của bạn</label>
                     <input type="text" class="form-control" id="search-location"
                         placeholder="Nhập địa chỉ" autocomplete="off">
                     <ul id="suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
                 </div>
-                
+                <!-- NÚT CHỨC NĂNG -->
+                <div class="d-flex gap-2">
+                    <button id="btn-nearest" type="button" class="btn btn-success w-50">Tìm 5 cơ sở gần nhất</button>
+                    <button id="btn-shortest" type="button" class="btn btn-primary w-50">Tìm đường ngắn nhất</button>
+                </div>
+            </div>
         
-                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
-            </form>
-
+            <!-- KẾT QUẢ HIỂN THỊ -->
             <div id="nearest-results" class="p-3"></div>
-        </div>
-        
-
-
+        </div>        
         <hr>
         <!-- Lớp mạng lưới cơ sở y tế -->
         <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#health-layer-collapse" aria-expanded="false" aria-controls="health-layer-collapse">
@@ -372,6 +375,7 @@
 {{ block.super }}
 <script src="{% static 'data_visualization/vendors/chartjs@3.0.0/chart.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'data_visualization/vendors/maplibre-gl@4.3.1/maplibre-gl.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
 <!-- Script xử lý sự kiện đóng mở collapse -->
@@ -479,61 +483,6 @@
         });
 
     });
-    document.querySelector('#search-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const keyword = document.querySelector('#search-keyword').value.toLowerCase();
-            const type = document.querySelector('#search-type').value;
-            // việt hóa
-            const typeMap = {
-                'bệnh viện': 'hospital',
-                'trạm y tế/Phòng khám': 'clinic',
-                'phòng khám tư nhân': 'doctor',
-                'nhà thuốc': 'pharmacy',
-                'nha khoa': 'dentist',
-                'trung tâm tiêm chủng': 'vacxin'
-            };
-            
-            type.forEach((item) => {
-                if (typeMap[item]) {
-                    type.push(typeMap[item]);
-                }
-            });
-
-            const locationInput = document.querySelector('#search-location').value.trim();
-
-            const filters = ['all'];
-            if (type) filters.push(['==', ['get', 'type'], type]);
-            if (keyword) filters.push(['in', keyword, ['downcase', ['get', 'name']]]);
-
-            map.setFilter('hospital-points', ['all', ['==', ['geometry-type'], 'Point'], ...filters]);
-            map.setFilter('hospital-polygons', ['all', ['==', ['geometry-type'], 'Polygon'], ...filters]);
-            map.setFilter('hospital-borders', ['all', ['==', ['geometry-type'], 'Polygon'], ...filters]);
-
-            // Xử lý tìm kiếm vị trí (tọa độ hoặc địa chỉ)
-            if (locationInput) {
-                const coordMatch = locationInput.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
-                if (coordMatch) {
-                    const lat = parseFloat(coordMatch[1]);
-                    const lng = parseFloat(coordMatch[3]);
-                    map.flyTo({ center: [lng, lat], zoom: 15 });
-                    new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
-                } else {
-                    // Nếu không phải tọa độ, gọi HERE API để geocode địa chỉ
-                    const query = encodeURIComponent(locationInput);
-                    const res = await fetch(`https://geocode.search.hereapi.com/v1/geocode?q=${query}&apiKey=YOUR_HERE_API_KEY`);
-                    const data = await res.json();
-                    if (data.items && data.items.length > 0) {
-                        const position = data.items[0].position;
-                        map.flyTo({ center: [position.lng, position.lat], zoom: 15 });
-                        new mapboxgl.Marker().setLngLat([position.lng, position.lat]).addTo(map);
-                    } else {
-                        alert('Không tìm thấy địa điểm.');
-                    }
-                }
-            }
-        });
-        
 </script>
 
 <script src="{% static 'data_visualization/js/pages/home.js' %}"></script>

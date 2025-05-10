@@ -88,9 +88,10 @@ def search_facilities(request):
 # 5 cơ sở y tế gần nhất
 @controller(url='/api/facility/nearest', methods=['GET'])
 def get_nearest_5_facilities(request):
-    address = request.GET.get('address')
+    lat = request.GET.get('lat')
+    lon = request.GET.get('lon')
     f_type = request.GET.get('type')
-    url = f"http://127.0.0.1:5000/api/analysis/nearest_facilities?address={address}&type={f_type}"
+    url = f"http://127.0.0.1:5000/api/analysis/nearest_facilities?lat={lat}&lon={lon}&type={f_type}"
     print(url)
     response = requests.get(url)
     
@@ -108,12 +109,14 @@ def get_nearest_5_facilities(request):
 @controller(url='/api/facility/shortest_path', methods=['GET'])
 def get_shortest_path(request):
     name = request.GET.get('name')
-    address = request.GET.get('address')
+    # address = request.GET.get('address')
+    lat = request.GET.get('lat')
+    lon = request.GET.get('lon')
     
-    if not name or not address:
+    if not name or not lat or not lon:
         return JsonResponse({"error": "name and address is required"}, status=400)
     
-    url = f"{BACKEND_URL}/api/analysis/shortest_path?name={name}&address={address}"
+    url = f"{BACKEND_URL}/api/analysis/shortest_path?name={name}&lat={lat}&lon={lon}"
 
     try:
         response = requests.get(url)

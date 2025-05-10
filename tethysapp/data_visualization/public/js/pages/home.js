@@ -495,6 +495,8 @@ function updateFacilityDropdown(data) {
 const API_KEY = 'JgkWvFIk4UTLFsY8PmCW2hlm3puo3WRhsqYspuJX';
 let debounceTimer;
 let marker;
+let userLatLng = null;  // Lưu [lat, lng]
+
 $('#search-location').on('input', function () {
     const query = $(this).val().trim();
     clearTimeout(debounceTimer);
@@ -537,6 +539,7 @@ $(document).on('click', '#suggestions li', function () {
     }, function (detail) {
         const location = detail.result.geometry.location;
         console.log('Tọa độ:', location.lat, location.lng);
+        userLatLng = [location.lat, location.lng];  // Lưu tọa độ người dùng
         map.flyTo({
             center: [location.lng, location.lat],
             zoom: 15
@@ -560,89 +563,182 @@ $(document).on('click', function (e) {
     }
 });
 
-// Khi người dùng chọn tên cơ sở
-$(function () {
-    $('#search-form').on('submit', function (e) {
-        e.preventDefault();
-        const address = $('#search-location').val().trim();
-        if (!address) {
-            alert('Vui lòng nhập địa chỉ hoặc tọa độ');
-            return;
-        }
-        // Lấy mảng type đã checked
-        const types = $('#type-checkboxes input:checked')
-            .map(function () { return this.value; }).get();
-        // việt hóa
-        const typesViet = {
-            'hospital': 'bệnh viện',
-            'clinic': 'trạm y tế/phòng khám',
-            'doctor': 'phòng khám tư nhân',
-            'pharmacy': 'nhà thuốc',
-            'dentist': 'nha khoa'
-        };
+const btnNearest = document.getElementById('btn-nearest');
+const btnShortest = document.getElementById('btn-shortest');
+const locationInput = document.getElementById('search-location');
+const keywordSelect = document.getElementById('search-keyword');
+const resultDiv = document.getElementById('nearest-results');
 
-        // Kiểm tra xem có loại nào được chọn không
-        if (types.length === 0) {
-            alert('Vui lòng chọn ít nhất 1 loại cơ sở');
-            return;
-        }
+// MapLibre đã khởi tạo sẵn với biến tên `map`
+let markers = [];
+let routeLayerId = "shortest-route";
 
-        types.forEach((t, i) => {
-            if (typesViet[t]) {
-                types[i] = typesViet[t]; // Gán giá trị mới vào
-            }
+// Xóa các marker và route cũ
+function clearMap() {
+    markers.forEach(m => m.remove());
+    markers = [];
+    if (map.getSource(routeLayerId)) {
+        map.removeLayer(routeLayerId);
+        map.removeSource(routeLayerId);
+    }
+}
+
+// Hiển thị popup kết quả
+function showPopup(coord, htmlContent) {
+    new maplibregl.Popup()
+        .setLngLat(coord)
+        .setHTML(htmlContent)
+        .addTo(map);
+}
+
+// Thêm marker
+function addMarker(coord, color = '#FF0000') {
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.style.backgroundColor = color;
+    el.style.width = '12px';
+    el.style.height = '12px';
+    el.style.borderRadius = '50%';
+
+    const marker = new maplibregl.Marker(el).setLngLat(coord).addTo(map);
+    markers.push(marker);
+    return marker;
+}
+
+// Lấy danh sách loại cơ sở được chọn
+function getSelectedTypes() {
+    const checkboxes = document.querySelectorAll('#type-checkboxes input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+btnNearest.addEventListener('click', async () => {
+    let types = getSelectedTypes();
+    const address = locationInput.value;
+
+    if (!address || types.length === 0) {
+        alert('Vui lòng nhập địa chỉ và chọn ít nhất một loại cơ sở.');
+        return;
+    }
+
+    if (!userLatLng) {
+        alert('Vui lòng chọn một địa điểm từ ô tìm kiếm.');
+        return;
+    }
+    if(types == 'hospital'){
+        types = 'bệnh viện';
+    } else if (types == 'clinic') {
+        types = 'trạm y tế/phòng khám';
+    }else if (types == 'doctor') {
+        types = 'phòng khám tư nhân';
+    } else if (types == 'pharmacy') {
+        types = 'nhà thuốc';
+    } else if (types == 'dentist') {
+        types = 'nha khoa';
+    }
+
+
+    const lat = userLatLng[0];
+    const lng = userLatLng[1];
+    console.log('Tọa độ người dùng:', lat, '+', lng);
+
+    try {
+        const response = await fetch(`/apps/data-visualization/api/facility/nearest?lat=${lat}&lon=${lng}&type=${types}`, {
+            method: 'GET'
         });
 
-        // Xây URL gọi 5_nearest
-        let url = `/apps/data-visualization/api/facility/nearest?address=` + encodeURIComponent(address);
-        types.forEach(t => { url += `&type=` + encodeURIComponent(t); });
+        const data = await response.json();
+        clearMap();
+        resultDiv.innerHTML = '';
 
-        $('#nearest-results').html('<p>Đang tải...</p>');
+        console.log(data.data);
 
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function (data) {
-                if (!data.length) {
-                    $('#nearest-results').html('<p>Không tìm thấy cơ sở nào.</p>');
-                    return;
-                }
-                // Tạo list kết quả
-                let html = '<h6>5 cơ sở gần nhất:</h6><ul class="list-group">';
-                data.forEach(item => {
-                    html += `<li class="list-group-item nearest-item" 
-                        data-name="${item.name}" 
-                        data-address="${item.address}">
-                    ${item.name} <br><small>${item.address}</small>
-                    </li>`;
-                });
-                html += '</ul>';
-                $('#nearest-results').html(html);
-            },
-            error: function () {
-                $('#nearest-results').html('<p>Không thể tải kết quả.</p>');
+        data.data.forEach((item, index) => {
+            let coord;
+
+            if (item.geometry.type === 'Point') {
+                coord = item.geometry.coordinates;
+            } else if (item.geometry.type === 'Polygon') {
+                // Lấy điểm đầu tiên của vòng ngoài hoặc dùng thư viện Turf để lấy centroid
+                coord = item.geometry.coordinates[0][0];
+            } else {
+                console.warn('Không hỗ trợ geometry type:', item.geometry.type);
+                return;
+            }
+
+            const html = `<strong>${item.name}</strong><br>${item.address || ''}`;
+            addMarker(coord, '#ff0000');
+            showPopup(coord, html);
+            resultDiv.innerHTML += `<p>${index + 1}. ${item.name}</p>`;
+        });
+        
+
+    } catch (err) {
+        console.error(err);
+        alert('Không thể tìm kiếm gần nhất.');
+    }
+});
+
+
+btnShortest.addEventListener('click', async () => {
+    const keyword = keywordSelect.value;
+    const address = locationInput.value;
+
+    if (!address || !keyword) {
+        alert('Vui lòng nhập địa chỉ và chọn tên cơ sở y tế.');
+        return;
+    }
+
+    if (!userLatLng) {
+        alert('Vui lòng chọn một địa điểm từ ô tìm kiếm.');
+        return;
+    }
+
+    const [lat, lng] = userLatLng;
+
+    try {
+        const response = await fetch(`/apps/data-visualization/api/facility/shortest_path?lat=${lat}&lon=${lng}&name=${encodeURIComponent(keyword)}`);
+        let data = await response.json();
+        data = data.data;
+        clearMap();
+
+        const geometry = data.route;
+        console.log(geometry);
+
+        map.addSource(routeLayerId, {
+            type: 'geojson',
+            data: {
+                type: "Feature",
+                geometry: {
+                    type: "MultiLineString",
+                    coordinates: data.route.coordinates
+                },
+                properties: {}
             }
         });
-    });
+        
 
-    // Khi click vào 1 cơ sở trong danh sách
-    $('#nearest-results').on('click', '.nearest-item', function () {
-        const name = $(this).data('name');
-        const address = $(this).data('address');
-        // Gọi API lấy đường đi ngắn nhất
-        const url = `/apps/data-visualization/api/facility/shortest_path?name=` +
-            encodeURIComponent(name) +
-            `&address=` + encodeURIComponent(address);
-        console.log('Gọi shortest_path:', url);
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function (res) {
-                console.log('Đường đi ngắn nhất:', res);
-            },
-            error: function () {
-                alert('Không thể tính đường đi.');
+        map.addLayer({
+            id: routeLayerId,
+            type: 'line',
+            source: routeLayerId,
+            paint: {
+                'line-color': '#00b894',
+                'line-width': 4
             }
         });
-    });
+        console.log(data);
+        
+        addMarker(data.data.start, '#2d3436');
+        addMarker(data.data.end, '#d63031');
+        showPopup(data.data.end, `<strong>${data.data.name}</strong>`);
+
+        map.fitBounds([
+            data.data.start,
+            data.data.end
+        ], { padding: 50 });
+
+    } catch (err) {
+        console.error(err);
+        alert('Không thể tìm đường.');
+    }
 });
