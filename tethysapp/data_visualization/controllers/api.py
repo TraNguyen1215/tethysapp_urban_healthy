@@ -85,6 +85,28 @@ def search_facilities(request):
     except Exception as e:
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
 
+# lấy cơ sở y tế theo id
+@controller(url='/api/facility', methods=['GET'])
+def get_facility_by_id(request):
+    facility_id = request.GET.get('id')
+    if not facility_id:
+        return JsonResponse({"error": "facility_id is required"}, status=400)
+    
+    url = f"{BACKEND_URL}/api/data/facility?id={facility_id}"
+
+    try:
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            data = {"error": response.text}
+
+        return JsonResponse({'data': data})
+    
+    except Exception as e:
+        return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+
 # 5 cơ sở y tế gần nhất
 @controller(url='/api/facility/nearest', methods=['GET'])
 def get_nearest_5_facilities(request):

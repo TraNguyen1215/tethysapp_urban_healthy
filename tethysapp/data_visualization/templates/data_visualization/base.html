@@ -31,14 +31,34 @@
               Trang chủ
             </li>
           </a>
-          <!-- <a class="nav-bar__item" id="result-menu" href="/apps/data-visualization/result">
+          <!-- <a class="nav-bar__item" id="result-menu" href="/apps/data-visualization/update">
             <li>
               Danh sách kết quả
             </li>
           </a> -->
-          <a class="nav-bar__item" id="dataset-menu" href="/apps/data-visualization/dashboard">
+          <a class="nav-bar__item" id="dashboard-menu" href="/apps/data-visualization/dashboard">
             <li>
               biểu đồ
+            </li>
+          </a>
+          {% if user.is_anonymous %}
+          <a class="nav-bar__item" id="apps" href="/apps/">
+            <li>
+              Ứng dụng
+            </li>
+          </a>
+          <a class="nav-bar__item" id="login" href="/accounts/login">
+            <li>
+              Đăng nhập
+            </li>
+          </a>
+          {% endif %}
+          <!-- nếu đăng nhập với vài admin sẽ nhìn thấy -->
+          
+          {% if user.is_superuser %}
+          <a class="nav-bar__item" id="update-menu" href="/apps/data-visualization/update">
+            <li>
+              Cập nhật
             </li>
           </a>
         </ul>
@@ -46,6 +66,7 @@
           <div class="user-avatar"></div>
           <p class="user-name">{{ user.username }}</p>
         </a>
+        {% endif %}
         <a class="header-bar__button help-button" title="Hỗ trợ" data-bs-toggle="modal"
           data-bs-target="#button-support">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-question-circle"

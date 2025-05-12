@@ -29,10 +29,10 @@ var map = new maplibregl.Map({
                 tiles: ['https://api.maptiler.com/maps/openstreetmap/256/{z}/{x}/{y}.jpg?key=roY3b7JE1zbvrHutS87H'],
                 tileSize: 256,
             },
-            'all-hanoi-source': {
-                type: 'geojson',
-                data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:all_hanoi',
-            },
+            // 'all-hanoi-source': {
+            //     type: 'geojson',
+            //     data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:all_hanoi',
+            // },
             'hospital-source': {
                 type: 'geojson',
                 data: 'http://localhost:8080/geoserver/health_map/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&typeName=health_map:hospital',
@@ -59,7 +59,7 @@ var map = new maplibregl.Map({
             'road-layer-source': {
                 'type': 'raster',
                 'tiles': [
-                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gis_osm_roads_free_1'
+                    'http://localhost:8080/geoserver/health_map/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gis_osm_roads_free_1_hn'
                 ]
             }
             
@@ -232,6 +232,17 @@ var map = new maplibregl.Map({
                     'visibility': 'none'
                 }
             },
+            {
+                'id':'road',
+                'type':'raster',
+                'source':'road-layer-source',
+                'paint': {
+                    'raster-opacity': 0.6
+                },
+                layout: {
+                    'visibility': 'none'
+                }
+            }
         ],
     },
     center: [105.854444, 21.028511],
@@ -310,25 +321,50 @@ function getAddress(properties) {
     return addressParts.filter(Boolean).join(', ');
 }
 
-function showFeatureInfo(feature) {
+async function showFeatureInfo(feature) {
     const properties = feature.properties;
 
     if (current_id === properties.id) return;
     current_id = properties.id;
 
+    let facilityData = {
+        name:  '',
+        type:  '',
+        speciality: '',
+        id: ''
+    };
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/data/facility?id=${properties.id}`);
+        if (response.ok) {
+            const data = await response.json();
+            facilityData.name = data.name || '';
+            facilityData.type = data.type || '';
+            facilityData.speciality = data.speciality || 'chung';
+            facilityData.id = data.id || facilityData.id;
+        } else {
+            console.warn('Không thể lấy thông tin từ API:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+    }
+
+    let healthcareType = healthcareMapping[facilityData.type?.toLowerCase()] || facilityData.type || '';
+
+    
     const address = getAddress(properties);
 
-    let healthcareType = properties.healthcare || properties.amenity;
+    // let healthcareType = properties.healthcare || properties.amenity;
     if (healthcareType) {
         healthcareType = healthcareMapping[healthcareType.toLowerCase()] || healthcareType;
     }
 
     const tableContent = `
         <tr><td>Mã địa lý</td><td>${properties.id || ''}</td></tr>
-        <tr><td>Loại</td><td>${healthcareType || ''}</td></tr>
-        <tr><td>Đối tượng đặc biệt</td><td>${properties["healthcare:speciality"] || 'chung'}</td></tr>
+        <tr><td>Loại</td><td>${healthcareType}</td></tr>
+        <tr><td>Chuyên môn</td><td>${facilityData.speciality}</td></tr>
         <tr><td>Địa chỉ</td><td>${address || ''}</td></tr>
-        <tr><td>Tên</td><td>${properties.name || ''}</td></tr>
+        <tr><td>Tên</td><td>${facilityData.name}</td></tr>
         <tr><td>Liên lạc</td><td>${properties.phone || properties.mobile || properties["contact:phone"] || ''}</td></tr>
     `;
 

@@ -222,6 +222,36 @@
             </div>
         </div>
         <hr>
+        <!-- Lớp bản đồ đường -->
+        <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#road-layer-collapse" aria-expanded="false"
+            aria-controls="road-layer-collapse">
+            <div class="d-flex" style="align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers-fill"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z" />
+                    <path
+                        d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z" />
+                </svg>
+                <h6 style="margin-left: 8px;">Hệ thống đường VN</h6>
+            </div>
+            <span class="icon" id="road-layer-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="000" class="bi bi-chevron-down"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.646 4.854a.5.5 0 0 1 .708 0L8 10.5l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </span>
+        </div>
+        <div class="collapse multi-collapse" id="road-layer-collapse">
+            <div class="population-layers layer-items" style="padding-right:0px ;">
+                <div class="layer-item form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="switch-road" />
+                    <label class="form-check-label" for="switch-road">Hệ thống đường Hà Nội</label>
+                </div>
+            </div>
+        </div>
+        <hr>
         <!-- Lớp bản đồ nền -->
         <div class="collapse-header" data-bs-toggle="collapse" data-bs-target="#bg-layer-collapse" aria-expanded="false" aria-controls="bg-layer-collapse">
             <h6>Bản đồ nền</h6>
@@ -360,6 +390,13 @@
                 <span class="legend-text">> 100000</span>
             </div>
         </div>
+        <div class="layer-legend d-none" id="road-legend">
+            <p class="mt-2 fw-bold text-primary"><i>Hệ thống đường Hà Nội</i></p>
+            <div class="layer-legend__item">
+                <div class="tag-square" style="background-color: #006eff; "></div>
+                <span class="legend-text">Đường</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -428,6 +465,7 @@
         setupCollapseToggle("#health-layer-collapse", "#health-layer-toggle-icon");
         setupCollapseToggle("#search-collapse", "#search-toggle-icon");
         setupCollapseToggle("#population-layer-collapse", "#population-layer-toggle-icon");
+        setupCollapseToggle("#road-layer-collapse", "#road-layer-toggle-icon");
 
         // Hiển thị legend-2 và layer tương ứng
         function toggleLayer(switchId, layerId) {
@@ -451,6 +489,7 @@
         // Gán sự kiện click cho tất cả các switch
         const layers = [
             { switchId: "switch-population", layerId: "population" },
+            { switchId: "switch-road", layerId: "road" },
             { switchId: "switch-01", layerId: "hospital-points"},
             { switchId: "switch-01", layerId: "hospital-polygons"},
             { switchId: "switch-02", layerId: "clinics-doctors-points"},
