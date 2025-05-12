@@ -324,8 +324,15 @@ function getAddress(properties) {
 async function showFeatureInfo(feature) {
     const properties = feature.properties;
 
+
     if (current_id === properties.id) return;
     current_id = properties.id;
+    current_id = current_id.replace(/\//g, '_');
+    console.log(current_id);
+    
+
+    // replace '/' trong id bằng '_'
+    // properties.id = properties.id.replace(/\//g, '_');
 
     let facilityData = {
         name:  '',
@@ -335,7 +342,7 @@ async function showFeatureInfo(feature) {
     };
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/data/facility?id=${properties.id}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/data/facility?id=${current_id}`);
         if (response.ok) {
             const data = await response.json();
             facilityData.name = data.name || '';
@@ -362,7 +369,7 @@ async function showFeatureInfo(feature) {
     const tableContent = `
         <tr><td>Mã địa lý</td><td>${properties.id || ''}</td></tr>
         <tr><td>Loại</td><td>${healthcareType}</td></tr>
-        <tr><td>Chuyên môn</td><td>${facilityData.speciality}</td></tr>
+        <tr><td>Chuyên môn</td><td>${facilityData.speciality || 'chung'}</td></tr>
         <tr><td>Địa chỉ</td><td>${address || ''}</td></tr>
         <tr><td>Tên</td><td>${facilityData.name}</td></tr>
         <tr><td>Liên lạc</td><td>${properties.phone || properties.mobile || properties["contact:phone"] || ''}</td></tr>

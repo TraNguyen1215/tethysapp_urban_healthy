@@ -1,6 +1,7 @@
 import base64
 import os
 import time
+from flask import json, jsonify
 import requests
 from dotenv import load_dotenv
 from django.http import JsonResponse, HttpResponse
@@ -106,6 +107,36 @@ def get_facility_by_id(request):
     
     except Exception as e:
         return JsonResponse({"error": "Error fetching data from the backend", "details": str(e)}, status=500)
+
+#cập nhật thông tin cơ sở y tế
+@controller(url='/api/facility/update', methods=['POST'])
+def update_facility(request):
+    try:
+        data = json.loads(request.body)
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON data"}), 400
+
+        # Gửi POST đến backend API
+        res = requests.post(f'{BACKEND_URL}/api/data/facility/update', json=data)
+        return jsonify(res.json()), res.status_code
+
+    except Exception as e:
+        return jsonify({"error": "Frontend failed to call backend", "details": str(e)}), 500
+
+@controller(url='/api/facility/delete/{facility_id}', methods=['DELETE'])
+def delete_facility(request, facility_id):
+    try:
+        if not facility_id:
+            return JsonResponse({"error": "facility_id is required"}, status=400)
+
+        # Gửi DELETE đến backend API
+        res = requests.delete(f'{BACKEND_URL}/api/data/facility/delete/{facility_id}')
+        if res.status_code == 200:
+            return JsonResponse({"message": "Facility deleted successfully"})
+        else:
+            return JsonResponse({"error": res.text}, status=res.status_code)
+    except Exception as e:
+        return JsonResponse({"error": "Frontend failed to call backend", "details": str(e)}, status=500)
 
 # 5 cơ sở y tế gần nhất
 @controller(url='/api/facility/nearest', methods=['GET'])

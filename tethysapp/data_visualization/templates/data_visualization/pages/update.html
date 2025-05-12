@@ -3,7 +3,7 @@
 {% block content %}
 <div style="padding: 20px;">
     <div class="alert alert-info" role="alert">
-        <b>Danh sách kết quả phân tích</b>
+        <b>Danh sách dữ liệu cơ sở y tế</b>
     </div>
 
     <div class="result__table">
@@ -19,7 +19,17 @@
                 <input id="search-result-input" type="text" class="form-control" style="width: 400px;"
                     placeholder="Nhập từ khoá tìm kiếm" aria-label="Tìm kiếm kết quả">
             </div>
-            <button id="delete-selected" class="btn btn-danger">Xóa đã chọn</button>
+
+            <select id="facility-type-select" class="form-select" style="width: 200px;">
+                <option value="all">Tất cả loại</option>
+                <option value="hospital">Bệnh viện</option>
+                <option value="clinic">Trạm y tế/phòng khám</option>
+                <option value="pharmacy">Nhà thuốc</option>
+                <option value="dentist">Nha khoa</option>
+                <option value="doctor">Phòng khám tư nhân</option>
+                <option value="alternative">Y học cổ truyền</option>
+                <option value="vacxin">Trung tâm tiêm chủng</option>
+            </select>
         </div>
         <div id="loading" style="display: none; text-align: center; padding: 20px; margin-top:50px;">
             <div class="spinner-border" role="status">
@@ -47,35 +57,69 @@
             </div>
         </div>
     </div>
-    <!-- Hiển thị cho kết quả không thành công-->
-    <div class="modal fade" id="failModal" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal chỉnh sửa cơ sở y tế -->
+    <div class="modal fade" id="editFacilityModal" style="margin-top: 250px;" tabindex="-1" aria-labelledby="editFacilityModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="failModalLabel">Chi tiêt</h5>
-                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                </div>
-                <div class="modal-body">
-                    <p id="upload-message"><b>Chi tiết lỗi:</b>Lỗi tải hình ảnh hoặc không phân tích được</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="modal-buton"
-                        data-bs-dismiss="modal">Đóng</button>
-                </div>
+                <form id="editFacilityForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editFacilityModalLabel">Chỉnh sửa cơ sở y tế</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_osm_id" name="osm_id">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_name" class="form-label">Tên cơ sở</label>
+                                <input type="text" class="form-control" id="edit_name" name="name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_type" class="form-label">Loại hình</label>
+                                <input type="text" class="form-control" id="edit_type" name="type">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_address" class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" id="edit_address" name="address">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_phone" class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" id="edit_phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_opening_hours" class="form-label">Giờ mở cửa</label>
+                                <input type="text" class="form-control" id="edit_opening_hours" name="opening_hours">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_website" class="form-label">Website</label>
+                                <input type="text" class="form-control" id="edit_website" name="website">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+    <!-- Hiển thị cho kết quả không thành công-->
 </div>
 {% endblock %}
 
 {% block styles %}
 {{ block.super }}
 <link href="{% static 'data_visualization/vendors/datatables@2.0.7/dataTables.css' %}" rel="stylesheet" />
-<link href="{% static 'data_visualization/css/pages/result.css' %}" rel="stylesheet" />
+<link href="{% static 'data_visualization/css/pages/update.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
 <script src="{% static 'data_visualization/vendors/datatables@2.0.7/dataTables.js' %}"></script>
-<!-- <script src="{% static 'data_visualization/js/pages/result.js' %}"></script> -->
+<script src="{% static 'data_visualization/js/pages/update.js' %}"></script>
 {% endblock %}
