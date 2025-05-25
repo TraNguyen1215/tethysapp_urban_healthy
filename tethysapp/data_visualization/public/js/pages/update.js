@@ -23,7 +23,7 @@ $(document).ready(function () {
 function initFacilityTypeDropdown() {
     $('#facility-type-select').on('change', function () {
         const selectedType = $(this).val();
-        loadFacilitiesByType(selectedType !== 'all' ? selectedType : null);
+        loadFacilitiesByType(selectedType !== 'all' ? selectedType : null); //
     });
 
     $('#search-result-input').on('input', function () {
@@ -35,8 +35,10 @@ function initFacilityTypeDropdown() {
 
 // Load dữ liệu theo type
 function loadFacilitiesByType(type = null) {
-    let apiUrl = type ? `http://127.0.0.1:5000/api/data/facilities/${type}`
+    let apiUrl = (type && type !== 'all')
+        ? `http://127.0.0.1:5000/api/data/facilities/${type}`
         : 'http://127.0.0.1:5000/api/data/facilities';
+
 
     $.ajax({
         url: apiUrl,

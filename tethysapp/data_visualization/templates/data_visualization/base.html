@@ -1,3 +1,6 @@
+{% load tethys %}
+{% load static tethys %}
+{% load tethys_gizmos %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -39,6 +42,11 @@
           <a class="nav-bar__item" id="upload-menu" href="/apps/data-visualization/upload">
             <li>
               Tải lên dữ liệu
+            </li>
+          </a>
+          <a class="nav-bar__item" id="map-menu" href="/apps/data-visualization/map">
+            <li>
+              Các lớp dữ liệu
             </li>
           </a>
           {% if user.is_anonymous %}
@@ -151,13 +159,19 @@
   </div>
 </body>
 
+
 {% block scripts %}
+{# Tải các thư viện vendor (jQuery, Bootstrap) trước tiên #}
+<script src="{% static 'data_visualization/vendors/jquery@3.7.1/jquery.min.js' %}"></script> {# jQuery phải tải trước #}
+<script src="{% static 'data_visualization/vendors/bootstrap@5.3.3/bootstrap.bundle.min.js' %}"></script> {# Bootstrap
+tải sau jQuery #}
+{# Thêm các thư viện vendor khác nếu có #}
+
+{# Tải các script của Tethys (bao gồm script khởi tạo gizmo) #}
 {{ block.super }}
-<script src="{% static 'data_visualization/vendors/bootstrap@5.3.3/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'data_visualization/vendors/jquery@3.7.1/jquery.min.js' %}"></script>
 
+{# Tải các script tùy chỉnh của ứng dụng bạn #}
 <script src="{% static 'data_visualization/js/main.js' %}"></script>
-
 {% endblock %}
 
 </html>

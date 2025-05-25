@@ -1,0 +1,39 @@
+{% extends "data_visualization/base.html" %}
+{% load static %}
+{% load tethys %}
+{% load tethys_gizmos %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="fas fa-layer-group"></i> Chọn lớp bản đồ từ GeoServer</h2>
+
+    <form id="layer-form" method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-md-9">
+            {% gizmo select_input %}
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-eye"></i> Hiển thị Layer
+            </button>
+        </div>
+    </form>
+
+    <div id="map-wrapper" class="position-relative">
+        <div id="custom-map-container"></div>
+    </div>
+
+    <div id="selected-layer-info" class="mt-3 text-muted fw-medium">
+        <strong>Layer đang hiển thị: </strong><span id="current-layer-name">Chưa có lớp nào được chọn</span>
+    </div>
+    <div id="map-error" class="alert alert-danger mt-3 d-none"></div>
+</div>
+
+<!-- JS libraries -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+<!-- map.css -->
+<link rel="stylesheet" href="{% static 'data_visualization/css/pages/map.css' %}">
+<!-- map.js -->
+<script src="{% static 'data_visualization/js/pages/map.js' %}"></script>
+{% endblock %}
