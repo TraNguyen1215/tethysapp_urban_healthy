@@ -1,0 +1,52 @@
+{% extends "data_visualization/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">Tải lên tệp Shapefile</h2>
+            <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="fileInput" class="form-label">Chọn đầy đủ các tệp .shp, .shx, .dbf, .prj</label>
+                    <input name="files" type="file" multiple class="form-control" id="fileInput"
+                        accept=".shp,.shx,.dbf,.prj,.sbn,.sbx,.cpg,.qix">
+                    <div class="form-text text-muted">Bắt buộc: .shp, .shx, .dbf, .prj</div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" name="submit" class="btn btn-primary px-4 py-2">
+                        Tải lên
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal phản hồi -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border border-{{ modal_type }}">
+            <div class="modal-header bg-{{ modal_type }} text-white">
+                <h5 class="modal-title" id="feedbackModalLabel">{{ modal_title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                {{ modal_message }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hiển thị modal nếu có -->
+{% if show_modal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+        modal.show();
+    });
+</script>
+{% endif %}
+{% endblock %}
